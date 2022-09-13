@@ -31,10 +31,13 @@ const addUser = (givenName, lastname, email, picture, word) => {
         isPlaying: true,
         game: newGame,
     })
+
+    return newUser.save()
+        .then((res) => res._id.toString());
 };
 
 const getCurrentWord = () => {
-
+    // get the word for the current game
 };
 
 module.exports = { addUser, getCurrentWord };

@@ -1,6 +1,7 @@
 require('../database/mongoose'); // mongoose.js
 require('dotenv').config();
 const express = require('express');
+const https = require('https');
 const path = require('path');
 const bodyParser = require('body-parser');
 const jwtDecoder = require('./jwt');
@@ -25,35 +26,43 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(publicDir + 'index.html'));
 });
 
-app.post('/user-info', (req, res) => {
+app.post('/user-info', async (req, res) => {
     const { jwtToken } = req.body;
     const { given_name, family_name, email, picture } = jwtDecoder(jwtToken);
-    let id;
 
-    if (given_name && family_name && email) {
-        async function getWord () {
-            let url = 'https://random-word-api.herokuapp.com/word';
-            let response = await fetch(url);
-            let responseText = await response.json();
-            return responseText[0]; 
-        };
-
-        addUser(given_name, family_name, email, picture, getWord())
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log('Adding new user to database - FAILED');
-                console.error(error);
-            });
+    if (!given_name || !family_name || !email) {
+        res.status(500);
+        res.send('Invalid User');
     }
+    const randomWordUrl = 'https://random-word-api.herokuapp.com/word';
+    const word = await https.get(randomWordUrl, (res) => {
+        let data = [];
+        res.on('data', (chunk) => {
+            data.push(chunk);
+        });
+        res.on('end', () => {
+            const response = JSON.parse(Buffer.concat(data).toString());
+            return response[0];
+        });
+    }).on('error', (error) => {
+        console.error(error);
+    });
 
-    res.status(200);
-    res.send(JSON.stringify({
-            firstname: given_name,
-            picture: picture,
-            // Maybe return MongoDB ID
-        }));
+    addUser(given_name, family_name, email, picture, word)
+        .then((mongoId) => {
+            res.status(200);
+            res.send(JSON.stringify({
+                firstname: given_name,
+                picture: picture,
+                // id: mongoId,// Maybe return MongoDB ID to use as unique ID
+            }));
+        })
+        .catch((error) => {
+            res.status(500);
+            res.send('DB Error');
+            console.log('Adding new user to database - FAILED');
+            console.error(error);
+        });
 });
 
 app.listen(port, () => {

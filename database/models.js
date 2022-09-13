@@ -42,7 +42,7 @@ const userSchema = new Schema({
         type: Boolean,
     },
     game: {
-        type: Game,
+        type: [{ type: Schema.Types.ObjectId, ref: 'Game' }],
     },
 });
 const User = model('User', userSchema);
