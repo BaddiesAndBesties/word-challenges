@@ -3,7 +3,7 @@ import Button from './Button'
 
 const Instructions = () => {
     return (
-        <main>
+        <main className='card'>
             <h1>Welcome to Word Challenge!</h1>
             <div>
                 <h3>Getting Started</h3>
@@ -25,7 +25,7 @@ const Instructions = () => {
                     <li>When you guess the word, you win!</li>
                     <li>Your score gets calculated and added to your stats.</li>
                 </ul>
-                {<Button text='Play Game' color='yellow' onClick={null} />}
+                {<Button text='Play Game' color='#dc8665' onClick={null} />}
             </div>
         </main>
     )
