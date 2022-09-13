@@ -1,8 +1,9 @@
-// require('../database/mongoose'); // mongoose.js
+require('../database/mongoose'); // mongoose.js
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const jwtDecoder = require('./jwt');
 
 const port = process.env.PORT || 3000;
 const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
@@ -23,10 +24,16 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(publicDir + 'index.html'));
 });
 
-app.post('/user', (req, res) => {
-    const { name, email } = req.body;
-    console.log('User name and email received in server.js: ' + name + ' | ' + email);
-})
+app.post('/user-info', (req, res) => {
+    const { jwtToken } = req.body;
+    const response = jwtDecoder(jwtToken);
+
+    res.status(200);
+    res.send(JSON.stringify({
+            firstname: response.given_name,
+            picture: response.picture
+        }));
+});
 
 app.listen(port, () => {
     console.log(`listening on ${port}`);
