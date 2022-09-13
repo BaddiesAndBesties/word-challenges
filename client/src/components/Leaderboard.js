@@ -12,10 +12,10 @@ const Leaderboard = () => {
         return players
     }
     return (
-        <main>
+        <main className='leaderboard card'>
             <h1>LEADERBOARD</h1>
             <ol>{addTopPlayers()}</ol>
-            <Button text='Back to Game' color='yellow' onClick={null} />
+            <Button text='Back to Game' color='#dc8665' onClick={null} />
         </main>
     )
 };

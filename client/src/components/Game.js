@@ -6,24 +6,24 @@ const Game = () => {
         const dictionaryWord = 'potato'
         const wordDisplay = []
         for (let i = 0; i < dictionaryWord.length; i++) {
-            wordDisplay.push(<li className='hidden'>{dictionaryWord[i]}</li>)
+            wordDisplay.push(<li><span className='hidden'>{dictionaryWord[i]}</span></li>)
         }
         return wordDisplay
     }
 
     return (
-        <main>
+        <main className='game card'>
             <h1>Guess the Word!</h1>
             <div>
                 <ul>{word()}</ul>
+                <p>Attempted Letters: {} </p>
                 <p>Incorrect Guess Counter: {} </p>
             </div>
             
             <div>
                 <form action='post'>
-                    <label>Take a guess!</label>
-                    <input type='text' placeholder='Enter letter or word' required />
-                    <Button text='Submit' color='green' />
+                    <input type='text' placeholder='Enter a letter or word' required />
+                    <Button text='Submit' color='#dc8665' />
                 </form>
             </div>
         </main>
