@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import GoogleSignIn from './GoogleSignIn';
 
-
 const Header = () => {
     return (
         <section id="header">
@@ -11,7 +10,5 @@ const Header = () => {
         </section>
     )
 }
-
-
 
 export default Header;

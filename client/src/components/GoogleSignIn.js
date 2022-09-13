@@ -4,27 +4,34 @@ import React, { useState, useEffect } from 'react';
 const GoogleSignIn = () => {
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [userName, setUserName] = useState(undefined);
-    const [userEmail, setUserEmail] = useState(undefined);
+    const [userPhoto, setUserPhoto] = useState(undefined);
 
     useEffect(() => {
         if (isSignedIn && userName) {
             return;
         }
 
-        const jwtDecoder = (token) => {
-            const base64Url = token.split('.')[1];
-            let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            let jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload)
-        };
-
         const signInHandler = (res) => {
-            const response = jwtDecoder(res.credential);
+            fetch('/user-info', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({
+                    jwtToken: res.credential
+                })
+            })
+                .then((res) => {
+                    return res.json();
+                })
+                .then((data) => {
+                    setUserName(data.firstname);
+                    setUserPhoto(data.picture);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
             setIsSignedIn(true);
-            setUserName(response.name);
-            setUserEmail(response.eamil);
         };
 
         const initGsi = async () => {
@@ -46,7 +53,6 @@ const GoogleSignIn = () => {
                         size: 'large' 
                     }
                 );
-                window.google.accounts.id.prompt();
             } catch(error) {
                 console.error(error);
             } finally {
@@ -103,9 +109,7 @@ const GoogleSignIn = () => {
                     null
             }
             {
-                !isSignedIn ?
-                    <div id="gsi-container"></div> :
-                    null
+                !isSignedIn ? <div id="gsi-container"></div> : null
             }
         </div>
         {/* <div>
@@ -113,6 +117,6 @@ const GoogleSignIn = () => {
         </div> */}
         </React.Fragment>
     );
-}
+};
 
 export default GoogleSignIn;
