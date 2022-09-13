@@ -1,0 +1,27 @@
+img{
+    width: 10%;
+}
+#header{
+    background-color: lightcoral;
+    display: flex;
+    justify-content: space-between;
+}
+button{
+    height: 30px;
+    margin-top: 20px;
+    margin-right: 10px;
+    background-color:  pink;
+}
+#googleAuth{
+    margin-top: 20px;
+}
+#googleAuth p{
+    margin: 0;
+}
+#welcome-container{
+    margin: 0;
+    font-size: 40px;
+    font-family: 'Ms Madi', cursive;
+    font-weight: bold;
+}
+
