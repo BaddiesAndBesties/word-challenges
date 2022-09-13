@@ -5,7 +5,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const jwtDecoder = require('./jwt');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(publicDir));
 
-// Routers
+// google Routers
 app.get('/google-client', (req, res) => {
     console.log('Google Client ID requested');
     res.status(200);
@@ -38,3 +38,6 @@ app.post('/user-info', (req, res) => {
 app.listen(port, () => {
     console.log(`listening on ${port}`);
 });
+
+//dictionary routers
+
