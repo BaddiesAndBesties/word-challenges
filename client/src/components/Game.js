@@ -3,13 +3,13 @@ import Button from './Button';
 
 const Game = () => {
     const word = () => {
-        const dictionaryWord = 'potato'
-        const wordDisplay = []
+        const dictionaryWord = 'potato';
+        const wordDisplay = [];
         for (let i = 0; i < dictionaryWord.length; i++) {
             wordDisplay.push(<li><span className='hidden'>{dictionaryWord[i]}</span></li>)
         }
-        return wordDisplay
-    }
+        return wordDisplay;
+    };
 
     return (
         <main className='game card'>
@@ -27,7 +27,7 @@ const Game = () => {
                 </form>
             </div>
         </main>
-    )
-}
+    );
+};
 
 export default Game;

@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const jwtDecoder = require('./jwt');
+const { addUser, getCurrentWord } = require('../database/mongoose');
 
 const port = process.env.PORT || 8080;
 const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
@@ -26,12 +27,32 @@ app.get('*', (req, res) => {
 
 app.post('/user-info', (req, res) => {
     const { jwtToken } = req.body;
-    const response = jwtDecoder(jwtToken);
+    const { given_name, family_name, email, picture } = jwtDecoder(jwtToken);
+    let id;
+
+    if (given_name && family_name && email) {
+        async function getWord () {
+            let url = 'https://random-word-api.herokuapp.com/word';
+            let response = await fetch(url);
+            let responseText = await response.json();
+            return responseText[0]; 
+        };
+
+        addUser(given_name, family_name, email, picture, getWord())
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((error) => {
+                console.log('Adding new user to database - FAILED');
+                console.error(error);
+            });
+    }
 
     res.status(200);
     res.send(JSON.stringify({
-            firstname: response.given_name,
-            picture: response.picture
+            firstname: given_name,
+            picture: picture,
+            // Maybe return MongoDB ID
         }));
 });
 
@@ -40,4 +61,6 @@ app.listen(port, () => {
 });
 
 //dictionary routers
-
+app.post('/whatever-path-dennis-chooses', (req, res) => {
+    const currentWord = getCurrentWord();
+});

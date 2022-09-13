@@ -9,7 +9,7 @@ const Header = () => {
             <GoogleSignIn/>
             <Button text='Sign Out' color='#dc8665' onClick={null} />
         </section>
-    )
-}
+    );
+};
 
 export default Header;

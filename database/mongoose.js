@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Game, User } = require('./models');
 require('dotenv').config();
 
 mongoose.connect(process.env.URL);
@@ -12,3 +13,28 @@ dbConnection.once('open', () => {
 dbConnection.on('error', (err) => {
     console.error('connection error: ', err);
 });
+
+const addUser = (givenName, lastname, email, picture, word) => {
+    const newGame = new Game({
+        word: word,
+        guess: [],
+    });
+
+    const newUser = new User({
+        given_name: givenName,
+        lastname: lastname,
+        email: email,
+        picture: picture,
+        point: 0,
+        wins: 0,
+        losses: 0,
+        isPlaying: true,
+        game: newGame,
+    })
+};
+
+const getCurrentWord = () => {
+
+};
+
+module.exports = { addUser, getCurrentWord };

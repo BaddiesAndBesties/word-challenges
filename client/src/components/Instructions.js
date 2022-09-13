@@ -1,5 +1,5 @@
-import React from 'react'
-import Button from './Button'
+import React from 'react';
+import Button from './Button';
 
 const Instructions = () => {
     return (
@@ -28,7 +28,7 @@ const Instructions = () => {
                 {<Button text='Play Game' color='#dc8665' onClick={null} />}
             </div>
         </main>
-    )
-}
+    );
+};
 
-export default Instructions
+export default Instructions;
