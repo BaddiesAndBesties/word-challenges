@@ -31,8 +31,8 @@ const Scoreboard = () => {
 
       <h4>Total Points: {}</h4>
 
-    </section>
-  )
+        </section>
+    )
 }
 
-export default Scoreboard
+export default Scoreboard;
