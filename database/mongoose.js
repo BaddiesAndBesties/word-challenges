@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Game, User } = require('./models');
 require('dotenv').config();
 
-mongoose.connect(process.env.URL);
+mongoose.connect(process.env.MONGODB);
 
 const dbConnection = mongoose.connection;
 

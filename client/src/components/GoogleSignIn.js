@@ -1,5 +1,4 @@
-//External imports
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, getUserEmail }) => {
     useEffect(() => {
