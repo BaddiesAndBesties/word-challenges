@@ -54,6 +54,7 @@ app.post('/user-info', async (req, res) => {
             res.send(JSON.stringify({
                 firstname: given_name,
                 picture: picture,
+                email: email,
                 // id: mongoId,// Maybe return MongoDB ID to use as unique ID
             }));
         })

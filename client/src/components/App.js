@@ -6,9 +6,9 @@ import Scoreboard from './Scoreboard';
 import Instructions from './Instructions';
 
 const App = () => {
-    const [showInstructions, setShowInstructions] = useState(false)
-    const [showLeaderboard, setShowLeaderboard] = useState(false)
-    const [showGame, setShowGame] = useState(true)
+    const [showInstructions, setShowInstructions] = useState(false);
+    const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [showGame, setShowGame] = useState(true);
 
     return (
         <div>
