@@ -24,11 +24,18 @@ img{
 #header .btn{
     margin-right: 2vw;
 }
-#welcome-container{
+#user-sign-in-container{
+    margin-right: 10rem;
     font-size: 40px;
     font-family: 'Ms Madi', cursive;
     font-weight: bold;
-    
+}
+#signed-in-container{
+    display: flex;
+    align-items: center;
+}
+#sign-out-btn{
+    margin-left: 5rem;
 }
 
 /* --------------------------------
