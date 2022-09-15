@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 const { model, Schema } = mongoose;
 
 // Schema & Model
-const gameSchema = new Schema({
-    word: {
-        type: String,
-        required: true,
-    },
-    guess: {
-        type: Array,
-    },
-});
-const Game = model('Game', gameSchema);
+// const gameSchema = new Schema({
+//     word: {
+//         type: String,
+//         required: true,
+//     },
+//     guess: {
+//         type: Array,
+//     },
+// });
+// const Game = model('Game', gameSchema);
 
 const userSchema = new Schema({
     given_name: {
@@ -42,9 +42,18 @@ const userSchema = new Schema({
         type: Boolean,
     },
     game: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'Game' }],
+        // type: [{ type: Schema.Types.ObjectId, ref: 'Game' }],
+        type: Object,
+        word: {
+            type: String,
+            // required: true,
+        },
+        guess: {
+            type: Array,
+        },
     },
 });
 const User = model('User', userSchema);
 
-module.exports = { Game, User };
+// module.exports = { Game, User };
+module.exports = { User };
