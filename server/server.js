@@ -58,33 +58,32 @@ app.post("/user-info", async (req, res) => {
       console.error(error);
     });
 
-  const EmailIfAlreadyInDB = User.find({ email: `${email}` })
-    .lean()
-    .limit(1);
-  EmailIfAlreadyInDB.exec(function (err, result) {
-    if (!result.length) {
-      addUser(given_name, family_name, email, picture, word);
-    }
-  });
-
-  // }
-  //if email isn't there, run addUser
-  // .then((mongoId) => {
-  // try{
+  try{
   res.status(200);
   res.send(
     JSON.stringify({
       //^^^ giving the following error:
       //typeerror-converting-circular-structure-to-json
       firstname: given_name,
-      // picture: picture,
+      picture: picture,
       email: email,
-      //https://stackoverflow.com/questions/4816099/chrome-sendrequest-error-typeerror-converting-circular-structure-to-json/31557814#31557814
-      // https://www.npmjs.com/package/flatted
 
       // id: mongoId,// Maybe return MongoDB ID to use as unique ID
     })
   );
+  }catch(err){
+      res.status(500);
+    console.log(err);
+  }
+
+  const EmailIfAlreadyInDB = User.find({ email: `${email}` })
+  .lean()
+  .limit(1);
+EmailIfAlreadyInDB.exec(function (err, result) {
+  if (!result.length) {
+    addUser(given_name, family_name, email, picture, word);
+  }
+});
   // }).then(msg=>{
   // console.log("WORD ISSSS", (JSON.stringify(word)));
   // })
