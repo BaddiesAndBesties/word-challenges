@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import GoogleSignIn from './GoogleSignIn';
 import Button from './Button';
 
