@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import GoogleSignIn from './GoogleSignIn';
-import Button from './Button';
+import React, { useState } from "react";
+import GoogleSignIn from "./GoogleSignIn";
+import Button from "./Button";
+
 
 const Header = ({ isSignedIn, setIsSignedIn, setUserEmail, setUserDbId }) => {
     const [userName, setUserName] = useState(undefined);

@@ -130,3 +130,4 @@ io.on("connection", (socket) => {
         socket.to(data.room).emit('gameData', {game: 'who are you'})
     })
 })
+
