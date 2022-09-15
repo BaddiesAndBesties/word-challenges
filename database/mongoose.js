@@ -1,3 +1,4 @@
+const { ObjectID } = require('bson');
 const mongoose = require('mongoose');
 const { User } = require('./models');
 require('dotenv').config();
@@ -47,8 +48,11 @@ const getStats = (id) => (
         .then(({ point, wins, losses, isPlaying }) => ({ point, wins, losses, isPlaying }))
 );
 
-const getCurrentWord = () => {
-    // get the word for the current game
+const getCurrentGame = (id) => {
+    User.findOne({
+        _id: new ObjectId(id)
+    })
+    .then(({ game }) => ({ game }))
 };
 
-module.exports = { findUser, addUser, getStats, getCurrentWord };
+module.exports = { findUser, addUser, getStats, getCurrentGame };

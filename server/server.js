@@ -35,6 +35,21 @@ app.get('/user/:id/stats', (req, res) => {
         });
 });
 
+// GET REQUEST FOR CURRENT GAME (word and current guesses)
+app.get('/user/:id/currentGame', (req, res) => {
+    const { id } = req.params;
+    getCurrentGame(id)
+        .then((game) => {
+            res.status(200);
+            res.send(JSON.stringify(game));
+            console.log(game)
+        })
+        .catch((error) => {
+            res.sendStatus(500);
+            console.error(error);
+        });
+});
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(publicDir + 'index.html'));
 });
@@ -99,7 +114,6 @@ app.post('/whatever-path-dennis-chooses', (req, res) => {
 const { Server } = require("socket.io");
 const cors = require("cors");
 app.use(cors());
-// const server = https.createServer(app)
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:3000",
