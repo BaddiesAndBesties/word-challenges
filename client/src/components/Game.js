@@ -11,8 +11,8 @@ const Game = ({ userDbId }) => {
         letter.value = '';
     };
 
-    socket.on('gameData', ({ game }) => {
-        console.log('Args from gameData = ' + game);
+    socket.on('guessResult', ({ result }) => {
+        console.log('Returned from server = ' + result);
     });
 
     const word = () => {

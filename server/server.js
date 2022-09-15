@@ -107,11 +107,10 @@ const io = new Server(server, {
     },
 })
 io.on("connection", (socket) => {
-    console.log(`user connected: ${socket.id}`)
+    console.log(`user connected: ${socket.id}`);
 
-    socket.on('guessedLetter', (data) => {
-        console.log(data.letter, 'room: ' + data.room,);
-        socket.emit('gameData', { game: 'who are you' });
+    socket.on('userGuess', ({ letter }) => {
+        socket.emit('guessResult', { result: letter });
     });
 });
 
