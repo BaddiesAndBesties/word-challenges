@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(publicDir));
 
-// google Routers
+// GOOGLE ROUTES
 app.get('/google-client', (req, res) => {
     console.log('Google Client ID requested');
     res.status(200);
@@ -66,11 +66,35 @@ app.post('/user-info', async (req, res) => {
         });
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`listening on ${port}`);
 });
 
-//dictionary routers
+// DICTIONARY ROUTE
 app.post('/whatever-path-dennis-chooses', (req, res) => {
     const currentWord = getCurrentWord();
 });
+
+// SOCKET.IO
+const { Server } = require("socket.io")
+const cors = require("cors")
+app.use(cors())
+// const server = https.createServer(app)
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+    },
+})
+io.on("connection", (socket) => {
+    console.log(`user connected: ${socket.id}`)
+
+    socket.on('joinRoom', (data) => {
+        socket.join(data)
+    })
+
+    socket.on('guessedLetter', (data) => {
+        console.log(data.letter, 'room: ' + data.room,)
+        socket.to(data.room).emit('gameData', {game: 'who are you'})
+    })
+})
