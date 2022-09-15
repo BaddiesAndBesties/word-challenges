@@ -5,7 +5,7 @@ const https = require('https');
 const path = require('path');
 const bodyParser = require('body-parser');
 const jwtDecoder = require('./jwt');
-const { findUser, addUser, getCurrentWord } = require('../database/mongoose');
+const { findUser, addUser, getStats, getCurrentWord } = require('../database/mongoose');
 
 const port = process.env.PORT || 8080;
 const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
@@ -15,43 +15,48 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(publicDir));
 
-// GOOGLE ROUTES
+// GET REQUEST FOR GOOGLE CLIENT ID (USED WHEN SIGNING IN)
 app.get('/google-client', (req, res) => {
-    console.log('Google Client ID requested');
     res.status(200);
     res.send(process.env.GOOGLE_CLIENT_ID);
+});
+
+// GET REQUEST FOR USER STATS (e.g., number of wins/losses and points)
+app.get('/user/:id/stats', (req, res) => {
+    const { id } = req.params;
+    getStats(id)
+        .then((stats) => {
+            res.status(200);
+            res.send(JSON.stringify(stats));
+        })
+        .catch((error) => {
+            res.sendStatus(500);
+            console.error(error);
+        });
 });
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(publicDir + 'index.html'));
 });
 
-app.post('/user-info', async (req, res) => {
+// POST REQUEST FOR NEW USER / RETURNS EXISTING DATA IF USER IS ALREADY IN THE DATABASE
+app.post('/gsi', async (req, res) => {
     const { jwtToken } = req.body;
     const { given_name, family_name, email, picture } = jwtDecoder(jwtToken);
 
-    if (!given_name || !family_name || !email) {
+    if (!given_name || !family_name || !email) { // Invalid user if missing one of these info
         res.status(500);
         res.send('Invalid User');
     }
 
-    const userInfo = await findUser(email)
-        .then((doc) => doc)
+    const userInfo = await findUser(email) // Look up if the user already exists in the database (based on email)
+        .then((doc) => doc) // Returns null if no matching document is found, otherwise returns a matching document
         .catch((error) => {
             console.log('Finding new user in database - FAILED');
             console.error(error);
         });
 
-    if (userInfo.length) { // If the useremail already exist in the database
-        res.status(200);
-        res.send(JSON.stringify({
-            firstname: userInfo[0].given_name,
-            picture: userInfo[0].picture,
-            email: userInfo[0].email,
-        }))
-    }
-    
-    if (!userInfo.length) { // If the useremail does NOT exist in the database
+    if (!userInfo) { // If the user email does NOT exist in the database, add it to the database
         const randomWordUrl = 'https://random-word-api.herokuapp.com/word';
         const word = await https.get(randomWordUrl, (res) => {
             let data = [];
@@ -68,12 +73,11 @@ app.post('/user-info', async (req, res) => {
     
         addUser(given_name, family_name, email, picture, word)
             .then((mongoId) => {
-                res.status(200);
+                res.status(201);
                 res.send(JSON.stringify({
                     firstname: given_name,
-                    picture: picture,
                     email: email,
-                    // id: mongoId,// Maybe return MongoDB ID to use as unique ID
+                    id: mongoId,// Maybe return MongoDB ID to use as unique ID
                 }));
             })
             .catch((error) => {
@@ -82,6 +86,15 @@ app.post('/user-info', async (req, res) => {
                 console.log('Adding new user to database - FAILED');
                 console.error(error);
             });
+    }
+
+    if (userInfo) { // If the user email already exist in the database, send existing user info
+        res.status(200);
+        res.send(JSON.stringify({
+            firstname: userInfo.given_name,
+            email: userInfo.email,
+            id: userInfo._id.toString(),
+        }))
     }
 });
 

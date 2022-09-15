@@ -2,7 +2,7 @@ import { useState } from 'react';
 import GoogleSignIn from './GoogleSignIn';
 import Button from './Button';
 
-const Header = ({ isSignedIn, setIsSignedIn, setUserEmail }) => {
+const Header = ({ isSignedIn, setIsSignedIn, setUserEmail, setUserDbId }) => {
     const [userName, setUserName] = useState(undefined);
 
     const onSignOut = () => {
@@ -24,12 +24,13 @@ const Header = ({ isSignedIn, setIsSignedIn, setUserEmail }) => {
                         </div>
                         :
                         <GoogleSignIn 
-                        isSignedIn={isSignedIn}    
-                        setIsSignedIn={setIsSignedIn}
-                        userName={userName}
-                        setUserName={setUserName}
-                        setUserEmail={setUserEmail}
-                    />
+                            isSignedIn={isSignedIn}    
+                            setIsSignedIn={setIsSignedIn}
+                            userName={userName}
+                            setUserName={setUserName}
+                            setUserEmail={setUserEmail}
+                            setUserDbId={setUserDbId}
+                        />
                 }
             </div>
         </section>

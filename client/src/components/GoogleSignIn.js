@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
-const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail }) => {
+const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail, setUserDbId }) => {
     useEffect(() => {
         const signInHandler = (res) => {
-            fetch('/user-info', {
+            fetch('/gsi', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json' 
@@ -15,9 +15,10 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUse
                 .then((res) => {
                     return res.json();
                 })
-                .then((userInfo) => {
-                    setUserName(userInfo.firstname);
-                    setUserEmail(userInfo.email);
+                .then(({ firstname, email, id }) => {
+                    setUserName(firstname);
+                    setUserEmail(email);
+                    setUserDbId(id);
                 })
                 .catch((error) => {
                     console.error(error);
