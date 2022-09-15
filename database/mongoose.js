@@ -1,4 +1,7 @@
-const { Game, User } = require('./models');
+
+const mongoose = require('mongoose');
+const { User } = require('./models');
+
 require('dotenv').config();
 
 const mongoose = require('mongoose')
@@ -23,11 +26,10 @@ const findUser = (email) => (
     })
 );
 
-const addUser = async (givenName, lastname, email, picture, word) => {
-    const newGame = new Game({
-        word: word,
-        guess: [],
-    });
+
+const addUser = (givenName, lastname, email, picture, word) => {
+
+    console.log(word)
 
     const newUser = new User({
         given_name: givenName,
@@ -38,13 +40,18 @@ const addUser = async (givenName, lastname, email, picture, word) => {
         wins: 0,
         losses: 0,
         isPlaying: true,
-        game: newGame,
+        game: {
+            word: JSON.stringify(word),
+            guess: [],
+        },
     })
 
     await newUser.save()
         .then((res) => res._id.toString());
 
 };
+
+
 
 const getStats = (id) => (
     User.findOne({

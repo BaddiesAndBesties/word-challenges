@@ -57,20 +57,8 @@ app.post('/gsi', async (req, res) => {
         });
 
     if (!userInfo) { // If the user email does NOT exist in the database, add it to the database
-        const randomWordUrl = 'https://random-word-api.herokuapp.com/word';
-        const word = await https.get(randomWordUrl, (res) => {
-            let data = [];
-            res.on('data', (chunk) => {
-                data.push(chunk);
-            });
-            res.on('end', () => {
-                const response = JSON.parse(Buffer.concat(data).toString());
-                return response[0];
-            });
-        }).on('error', (error) => {
-            console.error(error);
-        });
-    
+        const word = await getNewWord()
+
         addUser(given_name, family_name, email, picture, word)
             .then((mongoId) => {
                 res.status(201);
@@ -127,7 +115,34 @@ io.on("connection", (socket) => {
 
     socket.on('guessedLetter', (data) => {
         console.log(data.letter, 'room: ' + data.room,)
-        socket.to(data.room).emit('gameData', {game: 'who are you'})
+        socket.to(data.room).emit('gameData', { game: 'who are you' })
     })
 })
 
+const getNewWord = () => {
+    const randomWordUrl = 'https://random-word-api.herokuapp.com/word';
+    return new Promise((resolve, reject) => {
+        https.get(randomWordUrl, (res) => {
+            let data = [];
+            res.on('data', (chunk) => {
+                data.push(chunk);
+            });
+            res.on('end', () => {
+                try {
+                    const response = JSON.parse(Buffer.concat(data).toString());
+                    if (response && response[0]){
+                        resolve(response[0])
+                    } else {
+                        reject('word fetch failed - response length is 0 (invalid)')
+                    }
+                } catch (error) {
+                    console.log('word fetch failed')
+                    reject(error)
+                }
+
+            });
+        }).on('error', (error) => {
+            console.error(error);
+        });
+    })
+}
