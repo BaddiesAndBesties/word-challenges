@@ -7,14 +7,20 @@ import Scoreboard from './Scoreboard';
 const App = () => {
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [userEmail, setUserEmail] = useState(undefined);
+    const [userDbId, setUserDbId] = useState(undefined);
     const [showLeaderboard, setShowLeaderboard] = useState(false);
     const [showGame, setShowGame] = useState(true);
 
     return (
         <div>
-            <Header setUserEmail={setUserEmail} isSignedIn={isSignedIn} setIsSignedIn={setIsSignedIn} />
+            <Header 
+                isSignedIn={isSignedIn} 
+                setIsSignedIn={setIsSignedIn} 
+                setUserEmail={setUserEmail}
+                setUserDbId={setUserDbId}
+            />
             <div className='mainBody'>
-                <Scoreboard userEmail={userEmail} />
+                <Scoreboard isSignedIn={isSignedIn} userEmail={userEmail} userDbId={userDbId} />
                 {showLeaderboard ? <Leaderboard /> : <Game />}
             </div>
         </div>

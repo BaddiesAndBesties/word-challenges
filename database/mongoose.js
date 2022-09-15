@@ -3,8 +3,8 @@ const { Game, User } = require('./models');
 require('dotenv').config();
 
 mongoose.connect(process.env.MONGODB);
-
 const db = mongoose.connection;
+const ObjectId = mongoose.Types.ObjectId;
 
 db.once('open', () => {
     console.log('Database connected.');
@@ -15,7 +15,7 @@ db.on('error', (err) => {
 });
 
 const findUser = (email) => (
-    User.find({
+    User.findOne({
         email: email,
     })
 );
@@ -42,8 +42,15 @@ const addUser = (givenName, lastname, email, picture, word) => {
         .then((res) => res._id.toString());
 };
 
+const getStats = (id) => (
+    User.findOne({
+        _id: new ObjectId(id)
+    })
+        .then(({ point, wins, losses }) => ({ point, wins, losses }))
+);
+
 const getCurrentWord = () => {
     // get the word for the current game
 };
 
-module.exports = { findUser, addUser, getCurrentWord };
+module.exports = { findUser, addUser, getStats, getCurrentWord };
