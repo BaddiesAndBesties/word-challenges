@@ -27,13 +27,39 @@ const Scoreboard = ({ isSignedIn, userEmail, userDbId }) => {
     }
 }, [userDbId]);
 
+
+  function startNewGame(isSignedIn){
+    if(!isSignedIn){
+        alert('Sorry! Please sign in first.')
+        console.log("not signed in", isSignedIn);
+    }else{
+      //start a new game
+    }
+  }
+  function getLeaderboard(isSignedIn){
+    if(!isSignedIn){
+      alert('Sorry! Please sign in first.')
+      console.log("not signed in", isSignedIn);
+    }else{
+      //get leaderboard
+  }
+  }
+
   return (
     <section className='scoreboard card'>
         <div className='btnContainer'>
-            <Button text='New Game' />
-            <Button text='Leaderboard' /> 
+            <Button text='New Game' onClick={()=>{
+              startNewGame(isSignedIn)
+            }
+            }/>
+            
+            <Button text='Leaderboard' onClick={()=>{
+              getLeaderboard(isSignedIn)
+            }} />
+
             <Button text='Instructions' onClick={() => setShowInstructions(true)}/>
             {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
+
         </div>
         {
           isSignedIn 
