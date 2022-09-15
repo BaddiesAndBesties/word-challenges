@@ -36,7 +36,7 @@ app.post('/user-info', async (req, res) => {
     }
 
     const userInfo = await findUser(email)
-        .then((doc) => doc[0])
+        .then((doc) => doc)
         .catch((error) => {
             console.log('Finding new user in database - FAILED');
             console.error(error);
@@ -45,9 +45,9 @@ app.post('/user-info', async (req, res) => {
     if (userInfo.length) { // If the useremail already exist in the database
         res.status(200);
         res.send(JSON.stringify({
-            firstname: userInfo.given_name,
-            picture: userInfo.picture,
-            email: userInfo.email,
+            firstname: userInfo[0].given_name,
+            picture: userInfo[0].picture,
+            email: userInfo[0].email,
         }))
     }
     
