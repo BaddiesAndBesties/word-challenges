@@ -5,13 +5,23 @@ const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGODB);
 const dbConnection = mongoose.connection;
 
-dbConnection.once('open', () => {
+mongoose.connect(process.env.MONGODB);
+const db = mongoose.connection;
+const ObjectId = mongoose.Types.ObjectId;
+
+db.once('open', () => {
     console.log('Database connected.');
 });
 
-dbConnection.on('error', (err) => {
+db.on('error', (err) => {
     console.error('connection error: ', err);
 });
+
+const findUser = (email) => (
+    User.findOne({
+        email: email,
+    })
+);
 
 const addUser = async (givenName, lastname, email, picture, word) => {
     const newGame = new Game({
@@ -36,8 +46,15 @@ const addUser = async (givenName, lastname, email, picture, word) => {
 
 };
 
-const getCurrentWord = (word) => {
+const getStats = (id) => (
+    User.findOne({
+        _id: new ObjectId(id)
+    })
+        .then(({ point, wins, losses }) => ({ point, wins, losses }))
+);
+
+const getCurrentWord = () => {
     // get the word for the current game
 };
 
-module.exports = { addUser, getCurrentWord };
+module.exports = { findUser, addUser, getStats, getCurrentWord };

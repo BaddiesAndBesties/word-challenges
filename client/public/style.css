@@ -26,7 +26,7 @@ img{
 }
 #user-sign-in-container{
     margin-right: 10rem;
-    font-size: 40px;
+    font-size: 30px;
     font-family: 'Ms Madi', cursive;
     font-weight: bold;
 }
@@ -133,3 +133,53 @@ font-size: 16px;
     display: flex;
     justify-content: space-between;
 }
+
+/* --------------------------------
+            INSTRUCTIONS
+----------------------------------- */
+
+#portal .container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.300);
+  }
+  .container .modal {
+    z-index: 1;
+    width: 40%;
+    height: 40%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    position: relative;
+    animation: animate 0.5s;
+  }
+  .modal button {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    padding: 8px 11px;
+    background: crimson;
+    color: white;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  @keyframes animate {
+    from {
+      transform: scale(0.3);
+    }
+    to {
+      transform: scale(1);
+    }
+  }

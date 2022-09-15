@@ -1,7 +1,32 @@
-import React from 'react'
-import Button from './Button'
+import { useState, useEffect } from 'react';
+import Instructions from './Instructions';
+import Button from './Button';
 
-const Scoreboard = ({ isSignedIn }) => {
+const Scoreboard = ({ isSignedIn, userEmail, userDbId }) => {
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [point, setPoint] = useState(undefined);
+  const [wins, setWins] = useState(undefined);
+  const [losses, setLosses] = useState(undefined);
+
+  useEffect(() => {
+    if (userDbId) {
+      fetch(`/user/${userDbId}/stats`)
+        .then((res) => {
+          return res.json();
+        })
+        .then(({ point, wins, losses }) => {
+          setPoint(point);
+          setWins(wins);
+          setLosses(losses);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      console.log('NOT SIGNED IN')
+    }
+}, [userDbId]);
+
 
   function startNewGame(isSignedIn){
     if(!isSignedIn){
@@ -31,32 +56,29 @@ const Scoreboard = ({ isSignedIn }) => {
             <Button text='Leaderboard' onClick={()=>{
               getLeaderboard(isSignedIn)
             }} />
-            <Button text='Instructions' />
-            {/* make Instructions modal window, will doing this now  */}
+
+            <Button text='Instructions' onClick={() => setShowInstructions(true)}/>
+            {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
 
         </div>
-        <h2>Scoreboard</h2>
-      <h3>Check out your Stats!</h3>
-      <div>
-        <ul>
-            <li>Wins: {}</li>
-            <li>Losses: {}</li>
-            <li>Total Games Played: {}</li>
-        </ul>
-      </div>
-
-      <div>
-        <h5>Difficulty</h5>
-        <ul>
-            <li>Easy: {} games played</li>
-            <li>Medium: {} games played</li>
-            <li>Hard: {} games played</li>
-        </ul>
-      </div>
-
-      <h4>Total Points: {}</h4>
-
-        </section>
+        {
+          isSignedIn 
+            ?
+              <div id='stats'>
+                <h3>Check out your Stats!</h3>
+                <div>
+                  <ul>
+                    <li>Wins: {wins}</li>
+                    <li>Losses: {losses}</li>
+                    <li>Total Games Played: {wins + losses}</li>
+                  </ul>
+                </div>
+                <h4>Total Points: {point}</h4>
+              </div>
+            :
+              null
+        }
+    </section>
     )
 }
 

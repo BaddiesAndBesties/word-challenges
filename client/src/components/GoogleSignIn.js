@@ -1,10 +1,9 @@
-//External imports
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
-const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, getUserEmail }) => {
+const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail, setUserDbId }) => {
     useEffect(() => {
         const signInHandler = (res) => {
-            fetch('/user-info', {
+            fetch('/gsi', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json' 
@@ -16,9 +15,10 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, getUse
                 .then((res) => {
                     return res.json();
                 })
-                .then((data) => {
-                    setUserName(data.firstname);
-                    getUserEmail(data.email);
+                .then(({ firstname, email, id }) => {
+                    setUserName(firstname);
+                    setUserEmail(email);
+                    setUserDbId(id);
                 })
                 .catch((error) => {
                     console.error(error);
@@ -42,7 +42,7 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, getUse
                     document.querySelector("#gsi-container"),
                     { 
                         theme: 'outline', 
-                        size: 'large' 
+                        size: 'large',
                     }
                 );
             } catch(error) {
@@ -60,7 +60,7 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, getUse
         script.onload = initGsi;
         document.querySelector('body').appendChild(script);
 
-    }, [isSignedIn, setIsSignedIn, userName, setUserName, getUserEmail]);
+    }, [isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail]);
 
     return (
         <div id="gsi-container"></div>
