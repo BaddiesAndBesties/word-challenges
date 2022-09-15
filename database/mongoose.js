@@ -4,15 +4,21 @@ require('dotenv').config();
 
 mongoose.connect(process.env.MONGODB);
 
-const dbConnection = mongoose.connection;
+const db = mongoose.connection;
 
-dbConnection.once('open', () => {
+db.once('open', () => {
     console.log('Database connected.');
 });
 
-dbConnection.on('error', (err) => {
+db.on('error', (err) => {
     console.error('connection error: ', err);
 });
+
+const findUser = (email) => (
+    User.find({
+        email: email,
+    })
+);
 
 const addUser = (givenName, lastname, email, picture, word) => {
     const newGame = new Game({
@@ -40,4 +46,4 @@ const getCurrentWord = () => {
     // get the word for the current game
 };
 
-module.exports = { addUser, getCurrentWord };
+module.exports = { findUser, addUser, getCurrentWord };

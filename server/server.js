@@ -5,7 +5,7 @@ const https = require('https');
 const path = require('path');
 const bodyParser = require('body-parser');
 const jwtDecoder = require('./jwt');
-const { addUser, getCurrentWord } = require('../database/mongoose');
+const { findUser, addUser, getCurrentWord } = require('../database/mongoose');
 
 const port = process.env.PORT || 8080;
 const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
@@ -34,36 +34,55 @@ app.post('/user-info', async (req, res) => {
         res.status(500);
         res.send('Invalid User');
     }
-    const randomWordUrl = 'https://random-word-api.herokuapp.com/word';
-    const word = await https.get(randomWordUrl, (res) => {
-        let data = [];
-        res.on('data', (chunk) => {
-            data.push(chunk);
-        });
-        res.on('end', () => {
-            const response = JSON.parse(Buffer.concat(data).toString());
-            return response[0];
-        });
-    }).on('error', (error) => {
-        console.error(error);
-    });
 
-    addUser(given_name, family_name, email, picture, word)
-        .then((mongoId) => {
-            res.status(200);
-            res.send(JSON.stringify({
-                firstname: given_name,
-                picture: picture,
-                email: email,
-                // id: mongoId,// Maybe return MongoDB ID to use as unique ID
-            }));
-        })
+    const userInfo = await findUser(email)
+        .then((doc) => doc[0])
         .catch((error) => {
-            res.status(500);
-            res.send('DB Error');
-            console.log('Adding new user to database - FAILED');
+            console.log('Finding new user in database - FAILED');
             console.error(error);
         });
+
+    if (userInfo.length) { // If the useremail already exist in the database
+        res.status(200);
+        res.send(JSON.stringify({
+            firstname: userInfo.given_name,
+            picture: userInfo.picture,
+            email: userInfo.email,
+        }))
+    }
+    
+    if (!userInfo.length) { // If the useremail does NOT exist in the database
+        const randomWordUrl = 'https://random-word-api.herokuapp.com/word';
+        const word = await https.get(randomWordUrl, (res) => {
+            let data = [];
+            res.on('data', (chunk) => {
+                data.push(chunk);
+            });
+            res.on('end', () => {
+                const response = JSON.parse(Buffer.concat(data).toString());
+                return response[0];
+            });
+        }).on('error', (error) => {
+            console.error(error);
+        });
+    
+        addUser(given_name, family_name, email, picture, word)
+            .then((mongoId) => {
+                res.status(200);
+                res.send(JSON.stringify({
+                    firstname: given_name,
+                    picture: picture,
+                    email: email,
+                    // id: mongoId,// Maybe return MongoDB ID to use as unique ID
+                }));
+            })
+            .catch((error) => {
+                res.status(500);
+                res.send('DB Error');
+                console.log('Adding new user to database - FAILED');
+                console.error(error);
+            });
+    }
 });
 
 const server = app.listen(port, () => {
@@ -76,9 +95,9 @@ app.post('/whatever-path-dennis-chooses', (req, res) => {
 });
 
 // SOCKET.IO
-const { Server } = require("socket.io")
-const cors = require("cors")
-app.use(cors())
+const { Server } = require("socket.io");
+const cors = require("cors");
+app.use(cors());
 // const server = https.createServer(app)
 const io = new Server(server, {
     cors: {
