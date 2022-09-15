@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Instructions from './Instructions';
 import Button from './Button';
 
-const Scoreboard = ({ isSignedIn, userEmail, userDbId, setGameAndLeaderboard, showGame }) => {
+const Scoreboard = ({ isSignedIn, userDbId, setGameAndLeaderboard, showGame }) => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
@@ -15,7 +15,7 @@ const Scoreboard = ({ isSignedIn, userEmail, userDbId, setGameAndLeaderboard, sh
         .then((res) => {
           return res.json();
         })
-        .then(({ point, wins, losses, isPlaying}) => {
+        .then(({ point, wins, losses, isPlaying }) => {
           setPoint(point);
           setWins(wins);
           setLosses(losses);
@@ -24,43 +24,53 @@ const Scoreboard = ({ isSignedIn, userEmail, userDbId, setGameAndLeaderboard, sh
         .catch((error) => {
           console.error(error);
         });
-    } 
-}, [userDbId]);
+    }
+  }, [userDbId]);
+
+  const startNewGame = () => {
+    fetch(`/user/${userDbId}/newGame`, {
+      method: 'put',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   return (
     <section className='scoreboard card'>
-        <div className='btnContainer'>
-          {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={()=>{
-              // startNewGame()
-            }
-            }/>}
-            
-            
-            <Button text={showGame ? 'Leaderboard' : 'Back to Game'} onClick={setGameAndLeaderboard} />
+      <div className='btnContainer'>
+        {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={startNewGame} />}
 
-            <Button text='Instructions' onClick={() => setShowInstructions(true)}/>
-            {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
 
-        </div>
-        {
-          isSignedIn 
-            ?
-              <div id='stats'>
-                <h3>Check out your Stats!</h3>
-                <div>
-                  <ul>
-                    <li>Wins: {wins}</li>
-                    <li>Losses: {losses}</li>
-                    <li>Total Games Played: {wins + losses}</li>
-                  </ul>
-                </div>
-                <h4>Total Points: {point}</h4>
-              </div>
-            :
-              null
-        }
+        <Button text={showGame ? 'Leaderboard' : 'Back to Game'} onClick={setGameAndLeaderboard} />
+
+        <Button text='Instructions' onClick={() => setShowInstructions(true)} />
+        {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
+
+      </div>
+      {
+        isSignedIn
+          ?
+          <div id='stats'>
+            <h3>Check out your Stats!</h3>
+            <div>
+              <ul>
+                <li>Wins: {wins}</li>
+                <li>Losses: {losses}</li>
+                <li>Total Games Played: {wins + losses}</li>
+              </ul>
+            </div>
+            <h4>Total Points: {point}</h4>
+          </div>
+          :
+          null
+      }
     </section>
-    )
+  )
 }
 
 export default Scoreboard;
