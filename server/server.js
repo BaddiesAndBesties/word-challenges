@@ -1,5 +1,4 @@
-const mongoose = require("mongoose"); // mongoose.js
-// ../database/
+require("../database/mongoose"); // mongoose.js
 require("dotenv").config();
 const express = require("express");
 const https = require("https");
@@ -8,14 +7,12 @@ const bodyParser = require("body-parser");
 const jwtDecoder = require("./jwt");
 const { addUser, getCurrentWord } = require("../database/mongoose");
 const { response } = require("express");
-const { User } = require("../database/models")
-
-
+const { User } = require("../database/models");
+const { log } = require("console");
 
 // import {parse, stringify, toJSON, fromJSON} from 'flatted';
 // CJS
 // const {parse, stringify, toJSON, fromJSON} = require('flatted');
-
 
 const port = process.env.PORT || 8080;
 const publicDir = path.join(__dirname, "..", "client", "public", "/");
@@ -24,7 +21,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(publicDir));
-mongoose.connect(process.env.MONGODB)
 
 // google Routers
 app.get("/google-client", (req, res) => {
@@ -44,70 +40,70 @@ app.post("/user-info", async (req, res) => {
   if (!given_name || !family_name || !email) {
     res.status(500);
     res.send("Invalid User");
-  }    const randomWordUrl = "https://random-word-api.herokuapp.com/word";
-    const word = https
-      .get(randomWordUrl, (res) => {
-        let data = [];
-        res.on("data", (chunk) => {
-          data.push(chunk);
-        });
-        res.on("end", () => {
-          const response = JSON.parse(Buffer.concat(data).toString());
-          getCurrentWord(word)
-          return response[0];
-        });
-      })
-      .on("error", (error) => {
-        console.error(error);
+  }
+  const randomWordUrl = "https://random-word-api.herokuapp.com/word";
+  const word = https
+    .get(randomWordUrl, (res) => {
+      let data = [];
+      res.on("data", (chunk) => {
+        data.push(chunk);
       });
+      res.on("end", () => {
+        const response = JSON.parse(Buffer.concat(data).toString());
+        getCurrentWord(word);
+        return response[0];
+      });
+    })
+    .on("error", (error) => {
+      console.error(error);
+    });
 
+  const EmailIfAlreadyInDB = User.find({ email: `${email}` })
+    .lean()
+    .limit(1);
+  EmailIfAlreadyInDB.exec(function (err, result) {
+    if (!result.length) {
+      addUser(given_name, family_name, email, picture, word);
+    }
+  });
 
-      //check the database for email 
-      const EmailIfAlreadyInDB = await User.find({ email: `${email}` });
-      // { $text: { $search: `${given_name}` } }
-      if (!EmailIfAlreadyInDB){
-        addUser(given_name, family_name, email, picture, word)
+  // }
+  //if email isn't there, run addUser
+  // .then((mongoId) => {
+  // try{
+  res.status(200);
+  res.send(
+    JSON.stringify({
+      //^^^ giving the following error:
+      //typeerror-converting-circular-structure-to-json
+      firstname: given_name,
+      // picture: picture,
+      email: email,
+      //https://stackoverflow.com/questions/4816099/chrome-sendrequest-error-typeerror-converting-circular-structure-to-json/31557814#31557814
+      // https://www.npmjs.com/package/flatted
 
-      }
-      //if email isn't there, run addUser
-    // .then((mongoId) => {
-      // try{
-      res.status(200);
-      res.send(
-        JSON.stringify({
-          //^^^ giving the following error: 
-          //typeerror-converting-circular-structure-to-json
-          firstname: given_name,
-          // picture: picture,
-          email: email
-          //https://stackoverflow.com/questions/4816099/chrome-sendrequest-error-typeerror-converting-circular-structure-to-json/31557814#31557814
-          // https://www.npmjs.com/package/flatted
+      // id: mongoId,// Maybe return MongoDB ID to use as unique ID
+    })
+  );
+  // }).then(msg=>{
+  // console.log("WORD ISSSS", (JSON.stringify(word)));
+  // })
+  // .catch((error) => {
+  // res.status(500);
+  // res.send("DB Error");
+  // Cannot set headers after they are sent to the client
+  // console.log("Adding new user to database - FAILED");
+  // console.error(error);
 
-          // id: mongoId,// Maybe return MongoDB ID to use as unique ID
-        })
-          );
-    // }).then(msg=>{
-      // console.log("WORD ISSSS", (JSON.stringify(word)));
-    // })
-    // .catch((error) => {
-      // res.status(500);
-      // res.send("DB Error");
-      // Cannot set headers after they are sent to the client
-      // console.log("Adding new user to database - FAILED");
-      // console.error(error);
-
-    // });
-// });
-      })
+  // });
+  // });
+});
 app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
 
 //submit user info to db once user logs in
 // app.post("/userLoggedIn", {
-  
-
-
 
 //Submit button
 // app.post("/submitGuess", (req, res) =>{
