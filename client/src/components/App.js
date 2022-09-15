@@ -21,7 +21,7 @@ const App = () => {
             />
             <div className='mainBody'>
                 <Scoreboard isSignedIn={isSignedIn} userEmail={userEmail} userDbId={userDbId} />
-                {showLeaderboard ? <Leaderboard /> : <Game />}
+                {showLeaderboard ? <Leaderboard /> : <Game userDbId={userDbId} />}
             </div>
         </div>
     );

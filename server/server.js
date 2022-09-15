@@ -109,15 +109,11 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     console.log(`user connected: ${socket.id}`)
 
-    socket.on('joinRoom', (data) => {
-        socket.join(data)
-    })
-
     socket.on('guessedLetter', (data) => {
-        console.log(data.letter, 'room: ' + data.room,)
-        socket.to(data.room).emit('gameData', { game: 'who are you' })
-    })
-})
+        console.log(data.letter, 'room: ' + data.room,);
+        socket.emit('gameData', { game: 'who are you' });
+    });
+});
 
 const getNewWord = () => {
     const randomWordUrl = 'https://random-word-api.herokuapp.com/word';

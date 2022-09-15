@@ -22,28 +22,27 @@ const Scoreboard = ({ isSignedIn, userEmail, userDbId }) => {
         .catch((error) => {
           console.error(error);
         });
-    } else {
-      console.log('NOT SIGNED IN')
-    }
+    } 
 }, [userDbId]);
 
 
-  function startNewGame(isSignedIn){
+  function startNewGame(isSignedIn) {
     if(!isSignedIn){
-        alert('Sorry! Please sign in first.')
+        alert('Sorry! Please sign in first.');
         console.log("not signed in", isSignedIn);
     }else{
       //start a new game
     }
-  }
+  };
+
   function getLeaderboard(isSignedIn){
     if(!isSignedIn){
-      alert('Sorry! Please sign in first.')
+      alert('Sorry! Please sign in first.');
       console.log("not signed in", isSignedIn);
     }else{
       //get leaderboard
-  }
-  }
+    }
+  };
 
   return (
     <section className='scoreboard card'>
