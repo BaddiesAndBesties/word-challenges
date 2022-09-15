@@ -1,9 +1,24 @@
 import Button from './Button';
 import io from 'socket.io-client'
+import { useEffect } from 'react';
 
-const socket = io.connect("http://localhost:8080");
+const socket = io.connect(":8080");
 
 const Game = ({ userDbId }) => {
+    useEffect(() => {
+        socket.on('connect', () => {
+            console.log('Socket connected: ' + socket.id); // x8WIv7-mJelg7on_ALbx
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('Socket disconnected'); // undefined
+        });
+    
+        socket.on('guessResult', ({ result }) => {
+            console.log('Returned from server = ' + result);
+        });
+    }, []);
+
     const makeGuess = (e) => {
         if(document.querySelector('form').checkValidity()){
             e.preventDefault();
@@ -12,10 +27,6 @@ const Game = ({ userDbId }) => {
             letter.value = '';
         }
     };
-
-    socket.on('guessResult', ({ result }) => {
-        console.log('Returned from server = ' + result);
-    });
 
     const word = () => {
         const dictionaryWord = 'potato';
