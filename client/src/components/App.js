@@ -25,8 +25,12 @@ const App = () => {
                 setUserDbId={setUserDbId}
             />
             <div className='mainBody'>
-                <Scoreboard isSignedIn={isSignedIn} userEmail={userEmail} userDbId={userDbId} 
-                    setGameAndLeaderboard={setGameAndLeaderboard} showGame={showGame} />
+                <Scoreboard 
+                    isSignedIn={isSignedIn} 
+                    userDbId={userDbId} 
+                    setGameAndLeaderboard={setGameAndLeaderboard} 
+                    showGame={showGame} 
+                />
                 {showLeaderboard ? 
                 <Leaderboard setGameAndLeaderboard={setGameAndLeaderboard} /> : <Game userDbId={userDbId} />}
             </div>

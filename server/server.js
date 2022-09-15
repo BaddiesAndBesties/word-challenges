@@ -5,7 +5,7 @@ const https = require('https');
 const path = require('path');
 const bodyParser = require('body-parser');
 const jwtDecoder = require('./jwt');
-const { findUser, addUser, getStats, getCurrentWord } = require('../database/mongoose');
+const { findUser, addUser, getStats, getCurrentGame, startNewGame } = require('../database/mongoose');
 
 const port = process.env.PORT || 8080;
 const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
@@ -101,13 +101,16 @@ app.post('/gsi', async (req, res) => {
     }
 });
 
+// PUT REQUEST FOR NEW GAME
+app.put('/user/:id/newGame', async (req, res) => {
+    const { id } = req.params;
+    const word = await getNewWord()
+    startNewGame(id, word)
+})
+
+
 const server = app.listen(port, () => {
     console.log(`listening on ${port}`);
-});
-
-// DICTIONARY ROUTE
-app.post('/whatever-path-dennis-chooses', (req, res) => {
-    const currentWord = getCurrentWord();
 });
 
 // SOCKET.IO
@@ -139,7 +142,7 @@ const getNewWord = () => {
             res.on('end', () => {
                 try {
                     const response = JSON.parse(Buffer.concat(data).toString());
-                    if (response && response[0]){
+                    if (response && response[0]) {
                         resolve(response[0])
                     } else {
                         reject('word fetch failed - response length is 0 (invalid)')

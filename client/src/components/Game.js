@@ -26,12 +26,6 @@ const Game = ({ userDbId }) => {
         return wordDisplay;
     };
 
-    // function cantClickIfNotSignedIn(isSignedIn){
-    //     if(!isSignedIn){
-    //       alert('Sorry! Please sign in first.')
-    //       console.log("not signed in", isSignedIn);
-    //     }
-    //   }
     return (
         <main className='game card'>
             <h1>Guess the Word!</h1>

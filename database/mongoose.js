@@ -30,7 +30,7 @@ const addUser = (givenName, lastname, email, picture, word) => {
         point: 0,
         wins: 0,
         losses: 0,
-        isPlaying: true,
+        isPlaying: false,
         game: {
             word: word,
             guess: [],
@@ -55,4 +55,18 @@ const getCurrentGame = (id) => {
     .then(({ game }) => ({ game }))
 };
 
-module.exports = { findUser, addUser, getStats, getCurrentGame };
+const startNewGame = (id, word) => {
+    console.log(word, 'id: ' + id)
+    User.findOneAndUpdate({
+        _id: new ObjectId(id)
+    },
+    {
+        // isPlaying: true,
+        game: {
+            word: word,
+            guess: [],
+        },
+    })
+}
+
+module.exports = { findUser, addUser, getStats, getCurrentGame, startNewGame };
