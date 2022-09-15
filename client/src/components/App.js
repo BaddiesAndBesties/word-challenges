@@ -11,6 +11,11 @@ const App = () => {
     const [showLeaderboard, setShowLeaderboard] = useState(false);
     const [showGame, setShowGame] = useState(true);
 
+    const setGameAndLeaderboard = () => {
+        setShowLeaderboard(!showLeaderboard)
+        setShowGame(!showGame)
+      };
+
     return (
         <div>
             <Header 
@@ -20,8 +25,10 @@ const App = () => {
                 setUserDbId={setUserDbId}
             />
             <div className='mainBody'>
-                <Scoreboard isSignedIn={isSignedIn} userEmail={userEmail} userDbId={userDbId} />
-                {showLeaderboard ? <Leaderboard /> : <Game userDbId={userDbId} />}
+                <Scoreboard isSignedIn={isSignedIn} userEmail={userEmail} userDbId={userDbId} 
+                    setGameAndLeaderboard={setGameAndLeaderboard} showGame={showGame} />
+                {showLeaderboard ? 
+                <Leaderboard setGameAndLeaderboard={setGameAndLeaderboard} /> : <Game userDbId={userDbId} />}
             </div>
         </div>
     );

@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import Instructions from './Instructions';
 import Button from './Button';
 
-const Scoreboard = ({ isSignedIn, userEmail, userDbId }) => {
+const Scoreboard = ({ isSignedIn, userEmail, userDbId, setGameAndLeaderboard, showGame }) => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
   const [losses, setLosses] = useState(undefined);
+  const [isPlaying, setIsPlaying] = useState(undefined)
 
   useEffect(() => {
     if (userDbId) {
@@ -14,10 +15,11 @@ const Scoreboard = ({ isSignedIn, userEmail, userDbId }) => {
         .then((res) => {
           return res.json();
         })
-        .then(({ point, wins, losses }) => {
+        .then(({ point, wins, losses, isPlaying}) => {
           setPoint(point);
           setWins(wins);
           setLosses(losses);
+          setIsPlaying(isPlaying)
         })
         .catch((error) => {
           console.error(error);
@@ -25,36 +27,16 @@ const Scoreboard = ({ isSignedIn, userEmail, userDbId }) => {
     } 
 }, [userDbId]);
 
-
-  function startNewGame(isSignedIn) {
-    if(!isSignedIn){
-        alert('Sorry! Please sign in first.');
-        console.log("not signed in", isSignedIn);
-    }else{
-      //start a new game
-    }
-  };
-
-  function getLeaderboard(isSignedIn){
-    if(!isSignedIn){
-      alert('Sorry! Please sign in first.');
-      console.log("not signed in", isSignedIn);
-    }else{
-      //get leaderboard
-    }
-  };
-
   return (
     <section className='scoreboard card'>
         <div className='btnContainer'>
-            <Button text='New Game' onClick={()=>{
-              startNewGame(isSignedIn)
+          {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={()=>{
+              // startNewGame()
             }
-            }/>
+            }/>}
             
-            <Button text='Leaderboard' onClick={()=>{
-              getLeaderboard(isSignedIn)
-            }} />
+            
+            <Button text={showGame ? 'Leaderboard' : 'Back to Game'} onClick={setGameAndLeaderboard} />
 
             <Button text='Instructions' onClick={() => setShowInstructions(true)}/>
             {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
