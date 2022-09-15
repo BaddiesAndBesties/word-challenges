@@ -1,9 +1,8 @@
-const mongoose = require('mongoose');
 const { Game, User } = require('./models');
 require('dotenv').config();
 
-mongoose.connect(process.env.URL);
-
+const mongoose = require('mongoose')
+mongoose.connect(process.env.MONGODB);
 const dbConnection = mongoose.connection;
 
 dbConnection.once('open', () => {
@@ -14,7 +13,7 @@ dbConnection.on('error', (err) => {
     console.error('connection error: ', err);
 });
 
-const addUser = (givenName, lastname, email, picture, word) => {
+const addUser = async (givenName, lastname, email, picture, word) => {
     const newGame = new Game({
         word: word,
         guess: [],
@@ -32,11 +31,12 @@ const addUser = (givenName, lastname, email, picture, word) => {
         game: newGame,
     })
 
-    return newUser.save()
+    await newUser.save()
         .then((res) => res._id.toString());
+
 };
 
-const getCurrentWord = () => {
+const getCurrentWord = (word) => {
     // get the word for the current game
 };
 

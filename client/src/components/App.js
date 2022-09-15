@@ -9,12 +9,14 @@ const App = () => {
     const [showInstructions, setShowInstructions] = useState(false);
     const [showLeaderboard, setShowLeaderboard] = useState(false);
     const [showGame, setShowGame] = useState(true);
+    const [isSignedIn, setIsSignedIn] = useState(false);
+
 
     return (
         <div>
-            <Header />
+            <Header isSignedIn = {isSignedIn} setIsSignedIn={setIsSignedIn}/>
             <div className='mainBody'>
-                <Scoreboard />
+            <Scoreboard isSignedIn={isSignedIn} />                
                 {showInstructions ? <Instructions /> : showLeaderboard ? <Leaderboard /> : <Game />}
             </div>
         </div>
