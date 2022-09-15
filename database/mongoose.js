@@ -44,7 +44,7 @@ const getStats = (id) => (
     User.findOne({
         _id: new ObjectId(id)
     })
-        .then(({ point, wins, losses }) => ({ point, wins, losses }))
+        .then(({ point, wins, losses, isPlaying }) => ({ point, wins, losses, isPlaying }))
 );
 
 const getCurrentWord = () => {

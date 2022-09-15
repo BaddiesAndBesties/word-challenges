@@ -1,6 +1,4 @@
-import Button from './Button.js';
-
-const Leaderboard = () => {
+const Leaderboard = (setGameAndLeaderboard) => {
     const addTopPlayers = () => {
         const topPlayers = ['Will', 'Dennis', 'Kelly', 'Italians', 'Dogs'];
         const topPoints = [100, 90, 80, 70, 60];
@@ -14,7 +12,6 @@ const Leaderboard = () => {
         <main className='leaderboard card'>
             <h1>LEADERBOARD</h1>
             <ol>{addTopPlayers()}</ol>
-            <Button text='Back to Game' color='#dc8665' onClick={null} />
         </main>
     );
 };

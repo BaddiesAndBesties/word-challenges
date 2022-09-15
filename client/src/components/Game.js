@@ -5,10 +5,12 @@ const socket = io.connect("http://localhost:8080");
 
 const Game = ({ userDbId }) => {
     const makeGuess = (e) => {
-        e.preventDefault();
-        const letter = document.querySelector('input');
-        socket.emit('userGuess', {letter : letter.value}, userDbId);
-        letter.value = '';
+        if(document.querySelector('form').checkValidity()){
+            e.preventDefault();
+            const letter = document.querySelector('input');
+            socket.emit('userGuess', {letter : letter.value}, userDbId);
+            letter.value = '';
+        }
     };
 
     socket.on('guessResult', ({ result }) => {
@@ -24,12 +26,12 @@ const Game = ({ userDbId }) => {
         return wordDisplay;
     };
 
-    function cantClickIfNotSignedIn(isSignedIn){
-        if(!isSignedIn){
-          alert('Sorry! Please sign in first.')
-          console.log("not signed in", isSignedIn);
-        }
-      }
+    // function cantClickIfNotSignedIn(isSignedIn){
+    //     if(!isSignedIn){
+    //       alert('Sorry! Please sign in first.')
+    //       console.log("not signed in", isSignedIn);
+    //     }
+    //   }
     return (
         <main className='game card'>
             <h1>Guess the Word!</h1>
@@ -40,7 +42,7 @@ const Game = ({ userDbId }) => {
             </div>
             <div>
                 <form action='post'>
-                    <input type='text' placeholder='Enter a letter or word' required />
+                    <input type='text' placeholder='Enter a letter or word' pattern="[A-Za-z]{1}" required />
                     <Button onClick={makeGuess} text='Submit' color='#dc8665' />
                 </form>
             </div>
