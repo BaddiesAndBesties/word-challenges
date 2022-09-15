@@ -127,9 +127,26 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
     console.log(`user connected: ${socket.id}`);
 
-    socket.on('userGuess', ({ letter }) => {
-        socket.emit('guessResult', { result: letter });
+    let secretWord;
+
+    socket.on('wordLength', async({ id }) => {
+        if (id) {
+            console.log('DB ID PROVIDED: ' + id);
+            secretWord = await getCurrentGame(id)
+                .then(({ game }) => game.word)
+                .catch((error) => {
+                    console.log('Getting user game data FAILED');
+                    console.error(error);
+                });
+        socket.emit('wordLength', { length: secretWord.length });
+        }
+    })
+
+    socket.on('userGuess', async ({ letter }) => {
+        const currIndexs = [...secretWord.matchAll(new RegExp(letter, 'gi'))].map(a => a.index);
+        socket.emit('guessResult', { result: currIndexs });
     });
+
 });
 
 io.on('disconnet', () => {
