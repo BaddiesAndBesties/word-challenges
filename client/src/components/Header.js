@@ -2,22 +2,13 @@ import { useState } from 'react';
 import GoogleSignIn from './GoogleSignIn';
 import Button from './Button';
 
-const Header = () => {
-    const [isSignedIn, setIsSignedIn] = useState(false);
+const Header = ({ isSignedIn, setIsSignedIn, setUserEmail }) => {
     const [userName, setUserName] = useState(undefined);
-    const [userEmail, setUserEmail] = useState(undefined);
-
-    const getUserEmail = (email) => {
-        setUserEmail(email);
-    };
 
     const onSignOut = () => {
         setIsSignedIn(false);
         setUserName(undefined);
         setUserEmail(undefined);
-        window.google.accounts.id.revoke(userEmail, done => {
-            console.log(done.error);
-        });
     };
 
     return (
@@ -37,7 +28,7 @@ const Header = () => {
                         setIsSignedIn={setIsSignedIn}
                         userName={userName}
                         setUserName={setUserName}
-                        getUserEmail={getUserEmail} 
+                        setUserEmail={setUserEmail}
                     />
                 }
             </div>

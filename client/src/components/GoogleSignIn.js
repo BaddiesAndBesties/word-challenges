@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, getUserEmail }) => {
+const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail }) => {
     useEffect(() => {
         const signInHandler = (res) => {
             fetch('/user-info', {
@@ -15,9 +15,9 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, getUse
                 .then((res) => {
                     return res.json();
                 })
-                .then((data) => {
-                    setUserName(data.firstname);
-                    getUserEmail(data.email);
+                .then((userInfo) => {
+                    setUserName(userInfo.firstname);
+                    setUserEmail(userInfo.email);
                 })
                 .catch((error) => {
                     console.error(error);
@@ -41,7 +41,7 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, getUse
                     document.querySelector("#gsi-container"),
                     { 
                         theme: 'outline', 
-                        size: 'large' 
+                        size: 'large',
                     }
                 );
             } catch(error) {
@@ -59,7 +59,7 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, getUse
         script.onload = initGsi;
         document.querySelector('body').appendChild(script);
 
-    }, [isSignedIn, setIsSignedIn, userName, setUserName, getUserEmail]);
+    }, [isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail]);
 
     return (
         <div id="gsi-container"></div>

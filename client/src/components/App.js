@@ -5,14 +5,16 @@ import Game from './Game';
 import Scoreboard from './Scoreboard';
 
 const App = () => {
+    const [isSignedIn, setIsSignedIn] = useState(false);
+    const [userEmail, setUserEmail] = useState(undefined);
     const [showLeaderboard, setShowLeaderboard] = useState(false);
     const [showGame, setShowGame] = useState(true);
 
     return (
         <div>
-            <Header />
+            <Header setUserEmail={setUserEmail} isSignedIn={isSignedIn} setIsSignedIn={setIsSignedIn} />
             <div className='mainBody'>
-                <Scoreboard />
+                <Scoreboard userEmail={userEmail} />
                 {showLeaderboard ? <Leaderboard /> : <Game />}
             </div>
         </div>
