@@ -128,8 +128,24 @@ app.post('/gsi', async (req, res) => {
     }
 });
 
+// PUT REQUEST FOR NEW GAME
+app.put('/user/:id/newGame', async (req, res)=>{
+    const { id } = req.params;
+    const newWord = await getNewWord()
+    updatePlayingStatus(id)
+    startNewGame(id, newWord)
+        .then(() => {
+            res.sendStatus(201);
+        })
+        .catch((error) => {
+            console.log('Updating user playing status - FAILED');
+            console.error(error);
+            res.sendStatus(400);
+        })
+});
+
 // PUT REQUEST FOR USER PLAYING STATUS
-app.put('/user/:id/update-playing', async (req, res)=>{
+app.put('/user/:id/playingStatus', async (req, res)=>{
     const { id } = req.params;
     updatePlayingStatus(id)
         .then(() => {
