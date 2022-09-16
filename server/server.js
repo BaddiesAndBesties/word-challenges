@@ -143,17 +143,18 @@ app.put('/user/:id/update-stat', async (req, res) => {
         lose = 1;
     }
     updateUserStat(id, win, lose, point)
-        .then(({ _id }) => {
-            res.status(201);
-            res.send(JSON.stringify({
-                mongoId: _id.toString()
-            }));
-        })
-        .catch((error) => {
-            console.log('Updating user stats - FAILED');
-            console.error(error);
-            res.sendStatus(400);
-        });
+        // .then((data) => {
+        //     console.log(data)
+        //     res.status(201);
+        //     res.send(JSON.stringify({
+        //         mongoId: _id.toString()
+        //     }));
+        // })
+        // .catch((error) => {
+        //     console.log('Updating user stats - FAILED');
+        //     console.error(error);
+        //     res.sendStatus(400);
+        // });
 });
 
 // PUT REQUEST FOR USER PLAYING STATUS

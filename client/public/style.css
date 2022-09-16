@@ -1,39 +1,46 @@
-*{
+* {
     box-sizing: border-box;
-    padding: 0;
 }
-html{
+
+html {
     background-color: #eeb462;
 }
-body{
+
+body {
     margin: 0;
 }
+
 /* --------------------------------
             HEADER
 ----------------------------------- */
 
-img{
+img {
     width: 10%;
 }
-#header{
+
+#header {
     background-color: #534666;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-#header .btn{
+
+#header .btn {
     margin-right: 2vw;
 }
-#user-sign-in-container{
+
+#user-sign-in-container {
     margin-right: 10rem;
     font-size: 30px;
     font-family: 'Ms Madi', cursive;
     font-weight: bold;
 }
-#signed-in-container{
+
+#signed-in-container {
     display: flex;
     align-items: center;
 }
+
 #sign-out-btn {
     margin-left: 5rem;
 }
@@ -67,30 +74,31 @@ main {
 }
 
 .card {
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     padding: 2vh 2vw;
     border-radius: 20px;
 }
 
 .btn {
-display: inline-block;
-outline: none;
-cursor: pointer;
-font-weight: 600;
-border-radius: 3px;
-padding: 12px 24px;
-border: 0;
-color: #000;
-background: #dc8665;
-line-height: 1.15;
-font-size: 16px;
-text-align: center;
+    display: block;
+    outline: none;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 3px;
+    padding: 12px 24px;
+    border: 0;
+    color: #000;
+    background: #DC8665;
+    line-height: 1.15;
+    font-size: 16px;
+    text-align: center;
 }
 
 .btn:hover {
     transition: all .1s ease;
     box-shadow: 0 0 0 0 #fff, 0 0 0 3px #dc8665;
 }
+
 /* --------------------------------
             SCOREBOARD
 ----------------------------------- */
@@ -99,6 +107,7 @@ text-align: center;
     width: fit-content;
     margin: 1vh 0;
 }
+
 .scoreboard .btn-container {
     display: flex;
     flex-direction: column;
@@ -108,16 +117,21 @@ text-align: center;
 /* --------------------------------
             LEADERBOARD
 ----------------------------------- */
-.leaderboard, .game {
+.leaderboard,
+.game {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
 }
-.leaderboard h1, .leaderboard ol {
+
+.leaderboard h1,
+.leaderboard ol {
     width: fit-content;
 }
-.leaderboard h1, .game h1 {
+
+.leaderboard h1,
+.game h1 {
     margin-bottom: 0;
 }
 
@@ -125,7 +139,7 @@ text-align: center;
             GAME
 ----------------------------------- */
 .hidden {
-    visibility: hidden; 
+    visibility: hidden;
 }
 
 .game ul {
@@ -137,7 +151,7 @@ text-align: center;
 }
 
 .game li {
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     padding: 1vh 1vw;
     margin: 0 0.5vw;
     background-color: #dc8665;
@@ -204,6 +218,7 @@ text-align: center;
     from {
         transform: scale(0.3);
     }
+
     to {
         transform: scale(1);
     }

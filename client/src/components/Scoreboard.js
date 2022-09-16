@@ -28,7 +28,9 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
           console.error(error);
         });
     }
-  }, [gameOver, userDbId]);
+
+  }, [userDbId, point, wins, losses]);
+
 
   const startNewGame = () => {
     socketConnection.emit('newGame', {id: userDbId})
