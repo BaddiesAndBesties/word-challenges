@@ -1,26 +1,25 @@
 import Button from './Button';
+import io from 'socket.io-client'
 import { useEffect, useState } from 'react';
 
 // const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
+const socket = io.connect('http://localhost:8080'); 
 
-const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoint, socket }) => {
+const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoint }) => {
     const [incorrectGuesses, setIncorrectGuesses] = useState([]);
     const [placeholder, setPlaceholder] = useState([]);
     const [remainingGuess, setRemainingGuess] = useState(7);
-
-    const updatePlayingStatus = () => {
-        fetch(`/user/:id/update-playing`, {
-          method: 'put',
-          headers: { 'Content-Type': 'application/json' },
-        })
-          .then((res) => {
-            return res.json();
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }
-
+    const socket = io.connect('http://localhost:8080'); 
+    
+    const makeGuess = (e) => {
+        if (document.querySelector('form').checkValidity()) {
+            e.preventDefault();
+            const letter = document.querySelector('input');
+            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
+            letter.value = '';
+        }
+    };
+    
     useEffect(() => {
         socket.on('connect', () => {
             console.log('Socket connected: ' + socket.id); 
@@ -45,25 +44,14 @@ const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoi
             if (remainingGuess < 1) {
                 setGameOver(true);
                 setUserWon(false);
-                updatePlayingStatus()
             }
             if (placeholder.indexOf('_') < 0) {
                 setGameOver(true);
                 setUserWon(true);
-                updatePlayingStatus()
             }
         });
-    }, [gameOver, socket]);
-        
-    const makeGuess = (e) => {
-        if (document.querySelector('form').checkValidity()) {
-            e.preventDefault();
-            const letter = document.querySelector('input');
-            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
-            letter.value = '';
-        }
-    };
- 
+    }, [gameOver]);
+
     return (
         <main className='game card'>
             <div>
