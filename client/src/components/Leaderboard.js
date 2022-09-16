@@ -20,9 +20,9 @@ const Leaderboard = async (setGameAndLeaderboard) => {
         }
         console.log("PLAYERS", players);
     
-        for(let i=0; i<players.length; i++){
-            players[i]
-        }
+        // for(let i=0; i<players.length; i++){
+        //     console.log(players[i])
+        // }
         return players;
     }
     console.log(addTopPlayers())
