@@ -6,12 +6,11 @@ import { useEffect, useState } from 'react';
 const socket = io.connect('http://localhost:8080'); 
 
 const Game = ({ userDbId, gameOver, setGameOver }) => {
-    const [wordLength, setWordLength] = useState(undefined);
-    const [incorrectGuesses, setIncorrectGuesses] = useState(undefined);
-    const [incorrectCounter, setIncorrectCounter] = useState(undefined);
-    const [currentWord, setCurrentWord] = useState(undefined);
-    const [userWon, setUserWon] = useState(undefined);
-    const [maximumGuess, setMaximumGuess] = useState(7);
+    const [wordLength, setWordLength] = useState(0);
+    const [incorrectGuesses, setIncorrectGuesses] = useState([]);
+    const [placeholder, setPlaceholder] = useState([]);
+    const [gameResult, setGameResult] = useState(undefined);
+    const [remainingGuess, setRemainingGuess] = useState(7);
 
     useEffect(() => {
         socket.on('connect', () => {
@@ -22,74 +21,36 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
             console.log('Socket disconnected'); 
         });
 
-        socket.emit('wordLength', ({ id: userDbId }));
+        socket.emit('placeholder', ({ id: userDbId }));
 
-        socket.on('wordLength', ({ length }) => {
-            console.log('Word length is ' + length);
-            setWordLength(length);
+        socket.on('placeholder', ({ placeholder }) => {
+            console.log(placeholder);
+            setWordLength(placeholder.length);
+            setRemainingGuess(placeholder.length);
+            setPlaceholder(placeholder);
         });
 
-        socket.on('guessResult', ({ result, incorrect }) => {
-            console.log('Returned from server = ' + result);
-            console.log('Returned from server = ' + incorrect);
-            setIncorrectCounter(incorrect.length)
-            setIncorrectGuesses(incorrect.join(' ').toUpperCase())
-            setCurrentWord(result)
+        socket.on('guessResult', ({ result, incorrect, remainingGuess }) => {
+            setPlaceholder(result);
+            setIncorrectGuesses(incorrect.join(' ').toUpperCase());
+            setRemainingGuess(remainingGuess);
         });
-    }, [userDbId]);
+    }, []);
 
     const makeGuess = (e) => {
         if (document.querySelector('form').checkValidity()) {
             e.preventDefault();
             const letter = document.querySelector('input');
-            socket.emit('userGuess', { letter: letter.value });
+            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
             letter.value = '';
         }
     };
 
-    const displayWord = (wordLength, currentWord, incorrectCounter) => {
-        const wordDisplay = [];
-        if (currentWord && !currentWord.includes('1')) {
-            const userIsPlaying = fetch('/getIsPlaying', {
-                method: 'put', 
-                headers:{
-                    'Content-Type': 'application/json'
-                }, 
-                body: JSON.stringify({
-                    id: userDbId
-                })
-            })
-                .then((res) => {
-                    setGameOver(true);
-                })
-                .catch((error) => {
-                    alert('Server connection was disrupted. Please try again');
-                    console.error(error);
-                })
-                setUserWon(true);
-        } else if (currentWord && incorrectCounter === maximumGuess) {
-            setUserWon(false);
-        } else if (currentWord) {
-            for (let i = 0; i < wordLength; i++) {
-                if (currentWord[i] === '1') {
-                    wordDisplay.push(<li><span className='hidden'>1</span></li>);
-                } else {
-                    wordDisplay.push(<li><span>{currentWord[i]}</span></li>)
-                }
-            }
-        } else {
-            for (let i = 0; i < wordLength; i++) {
-                wordDisplay.push(<li><span className='hidden'>1</span></li>);
-            }
-        }
-        return wordDisplay;
-    };
-
     const displayGameResult = () => {
-        if (userWon) {
+        if (gameResult === 'won') {
             return <h1>YOU WIN</h1>
         }
-        if (!userWon) {
+        if (gameResult === 'loss') {
             return <h1>YOU LOSE</h1>
         }
     };
@@ -105,9 +66,18 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
                             <div id='game-screen'>
                                 <h1>Guess the Word!</h1>
 
-                                <ul>{displayWord(wordLength, currentWord, incorrectCounter)}</ul>
+                                <ul>{
+                                        placeholder.map((letter, i) => {
+                                            if (letter === '_') {
+                                                return <li key={i}><span className='hidden'>_</span></li>;
+                                            } else {
+                                                return <li key={i}><span>{letter}</span></li>;
+                                            }
+                                        })
+                                    }
+                                </ul>
                                 <p>Attempted Letters: {incorrectGuesses} </p>
-                                <p>Incorrect Guess Counter: {incorrectCounter} </p>
+                                <p>Remaining Guesses: {remainingGuess} </p>
                             </div>
                             <div>
                                 <form action='post'>

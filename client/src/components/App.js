@@ -9,8 +9,8 @@ const App = () => {
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [userEmail, setUserEmail] = useState(undefined);
     const [userDbId, setUserDbId] = useState(undefined);
-    const [showLeaderboard, setShowLeaderboard] = useState(true);
     const [gameOver, setGameOver] = useState(false);
+    const [showLeaderboard, setShowLeaderboard] = useState(true);
 
     return (
         <div>
@@ -26,8 +26,10 @@ const App = () => {
                 <Scoreboard
                     isSignedIn={isSignedIn}
                     userDbId={userDbId}
-                    setShowLeaderboard={setShowLeaderboard}
+                    gameOver={gameOver}
+                    setGameOver={setGameOver}
                     showLeaderboard={showLeaderboard}
+                    setShowLeaderboard={setShowLeaderboard}
                 />
                 {
                     isSignedIn 

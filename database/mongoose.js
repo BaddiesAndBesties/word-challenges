@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { User } = require('./models');
-const { ObjectID } = require('bson');
 require('dotenv').config();
 
 mongoose.connect(process.env.MONGODB);
@@ -55,6 +54,12 @@ const getCurrentGame = (id) => (
         .then(({ game }) => ({ game }))
 );
 
+const getTopScores = async () => {
+    const scores = await User.find();
+    scores.sort((score1, score2) => score1.point - score2.point);
+    return scores.length <= 5 ? scores : scores.slice(5);
+};
+
 const startNewGame = (id, word) => {
     User.findOneAndUpdate({
         _id: new mongoose.Types.ObjectId(id)
@@ -71,17 +76,28 @@ const startNewGame = (id, word) => {
         sort: {}, 
         upsert: false,
     }, 
-    (err, result)=>{
+    (err, result) => {
         if (err) console.log(err)
-    }
-    )
-}
+    });
+};
 
-const getTopScores = async () => {
-    let scores = await User.find()
-    scores.sort((score1, score2) => score1.point - score2.point)
-    return scores.length <= 5 ? scores : scores.slice(5)
-}
+const updatePlayingStatus = (id) => ( // Change isPlaying to be opposite value (true or false) 
+    User.findOneAndUpdate(
+        {
+            _id: new ObjectId(id)
+        }, 
+        [ 
+            { "$set": 
+                {
+                    "isPlaying": 
+                        {
+                            "$eq": [false, "$isPlaying"] // Returns true or false
+                        } 
+                    } 
+                } 
+            ])
+                .then((res) => res)
+);
 
-module.exports = { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores};
+module.exports = { findUser, addUser, getStats, getCurrentGame, getTopScores, startNewGame, updatePlayingStatus };
 
