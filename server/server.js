@@ -54,7 +54,7 @@ app.get('/user/:id/currentGame', (req, res) => {
 });
 
 // GET REQUEST FOR TOP SCORES
-app.get('/getTopScores', async (req, res) => {
+app.get('/leaderboard/top-five', async (req, res) => {
     await getTopScores()
         .then((scores) => {
             res.status(200)

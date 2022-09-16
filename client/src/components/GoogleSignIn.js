@@ -1,31 +1,31 @@
 import { useEffect } from 'react';
 
 const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail, setUserDbId }) => {
-    useEffect(() => {
-        const signInHandler = (res) => {
-            fetch('/gsi', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json' 
-                },
-                body: JSON.stringify({
-                    jwtToken: res.credential
-                })
+    const signInHandler = (res) => {
+        fetch('/gsi', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({
+                jwtToken: res.credential
             })
-                .then((res) => {
-                    return res.json();
-                })
-                .then(({ firstname, email, id }) => {
-                    setUserName(firstname);
-                    setUserEmail(email);
-                    setUserDbId(id);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-            setIsSignedIn(true);
-        };
-
+        })
+        .then((res) => {
+            return res.json();
+        })
+        .then(({ firstname, email, id }) => {
+            setUserName(firstname);
+            setUserEmail(email);
+            setUserDbId(id);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+        setIsSignedIn(true);
+    };
+    
+    useEffect(() => {
         const initGsi = async () => {
             try {
                 if (!window.google) {
@@ -59,8 +59,7 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUse
         script.async = true;
         script.onload = initGsi;
         document.querySelector('body').appendChild(script);
-
-    }, [isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail]);
+    }, [isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail, setUserDbId]);
 
     return (
         <div id="gsi-container"></div>

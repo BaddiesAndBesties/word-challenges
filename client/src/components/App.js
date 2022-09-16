@@ -33,7 +33,7 @@ const App = () => {
                     isSignedIn 
                         ?
                             showLeaderboard 
-                            ? <Leaderboard isSignedIn={isSignedIn} /> 
+                            ? <Leaderboard /> 
                             : <Game userDbId={userDbId} gameOver={gameOver} setGameOver={setGameOver} />
                         :
                         <WeclomeMessage />

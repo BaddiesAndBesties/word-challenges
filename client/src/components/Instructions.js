@@ -38,7 +38,7 @@ const Instructions = ({ setShowInstructions }) => {
             </div>
         </div>,
         document.getElementById("portal")
-      );
+    );
 };
 
 export default Instructions;
