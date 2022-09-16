@@ -45,21 +45,23 @@ const Game = ({ userDbId }) => {
         }
     };
 
-    const displayWord = (wordLength, currentWord) => {
+    const displayWord = (wordLength, currentWord, incorrectCounter) => {
         console.log('poop', currentWord)
         const wordDisplay = [];
-        if (currentWord && !currentWord.includes('1')){
+        if (currentWord && !currentWord.includes('1')) {
             // need to change isPlaying to false
             return <h1>YOU WIN</h1>
+        } else if (currentWord && incorrectCounter === 8) {
+            return <h1>YOU LOSE</h1>
         } else if (currentWord) {
             for (let i = 0; i < wordLength; i++) {
-                if (currentWord[i] === '1'){
+                if (currentWord[i] === '1') {
                     wordDisplay.push(<li><span className='hidden'>1</span></li>);
                 } else {
                     wordDisplay.push(<li><span>{currentWord[i]}</span></li>)
                 }
             }
-        }else {
+        } else {
             for (let i = 0; i < wordLength; i++) {
                 wordDisplay.push(<li><span className='hidden'>1</span></li>);
             }
@@ -71,17 +73,19 @@ const Game = ({ userDbId }) => {
         <main className='game card'>
             <h1>Guess the Word!</h1>
             <div>
-                {
-                    wordLength ? <ul>{displayWord(wordLength, currentWord)}</ul> : null
-                }
+
+                <ul>{displayWord(wordLength, currentWord, incorrectCounter)}</ul>
+
                 <p>Attempted Letters: {incorrectGuesses} </p>
                 <p>Incorrect Guess Counter: {incorrectCounter} </p>
             </div>
             <div>
+
                 <form action='post'>
                     <input type='text' placeholder='Enter a letter' pattern="[A-Za-z]{1}" required />
                     <Button onClick={makeGuess} text='Submit' color='#dc8665' />
                 </form>
+
             </div>
         </main>
     );
