@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Instructions from './Instructions';
 import Button from './Button';
 
-const Scoreboard = ({ isSignedIn, userDbId, setGameAndLeaderboard, showGame }) => {
+const Scoreboard = ({ isSignedIn, userDbId, setShowLeaderboard, showLeaderboard }) => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
@@ -47,7 +47,7 @@ const Scoreboard = ({ isSignedIn, userDbId, setGameAndLeaderboard, showGame }) =
         {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={startNewGame} />}
 
 
-        { (userDbId && isSignedIn) && <Button text={showGame ? 'Leaderboard' : 'Back to Game'} onClick={setGameAndLeaderboard} />}
+        { (userDbId && isSignedIn) && <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} onClick={() => setShowLeaderboard(!showLeaderboard)} />}
 
         <Button text='Instructions' onClick={() => setShowInstructions(true)} />
         {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}

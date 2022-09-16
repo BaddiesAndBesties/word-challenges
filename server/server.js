@@ -140,6 +140,9 @@ io.on('connection', (socket) => {
     console.log(`user connected: ${socket.id}`);
 
     let secretWord;
+    let placeholderWord;
+    let placeholders
+    let incorrectGuesses = []
 
     socket.on('wordLength', async({ id }) => {
         if (id) {
@@ -151,12 +154,24 @@ io.on('connection', (socket) => {
                     console.error(error);
                 });
         socket.emit('wordLength', { length: secretWord.length });
+        placeholderWord = '1'.repeat(secretWord.length).split('')
+        placeholders = placeholderWord.filter( char => char === '1')
         }
     })
-
     socket.on('userGuess', async ({ letter }) => {
         const currIndexs = [...secretWord.matchAll(new RegExp(letter, 'gi'))].map(a => a.index);
-        socket.emit('guessResult', { result: currIndexs });
+        console.log(currIndexs)
+        for (let i = 0; i < currIndexs.length; i++) {
+            placeholderWord[currIndexs[i]] = letter
+            console.log(placeholderWord)
+        }
+        let temp = placeholderWord.filter(char => char === '1')
+        if (placeholders.length === temp.length){
+            incorrectGuesses.push(letter)
+        } else{
+            placeholders = temp
+        }
+        socket.emit('guessResult', { result: placeholderWord, incorrect: incorrectGuesses });
     });
 
 });

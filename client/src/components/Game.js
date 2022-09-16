@@ -6,13 +6,16 @@ const socket = io.connect(":8080");
 
 const Game = ({ userDbId }) => {
     const [wordLength, setWordLength] = useState(undefined);
+    const [incorrectGuesses, setIncorrectGuesses] = useState(undefined);
+    const [incorrectCounter, setIncorrectCounter] = useState(undefined);
+    const [currentWord, setCurrentWord] = useState(undefined)
 
     useEffect(() => {
         // console.log(userDbId);
         socket.on('connect', () => {
             console.log('Socket connected: ' + socket.id); // x8WIv7-mJelg7on_ALbx
         });
-        
+
         socket.on('disconnect', () => {
             console.log('Socket disconnected'); // undefined
         });
@@ -23,9 +26,13 @@ const Game = ({ userDbId }) => {
             console.log('Word length is ' + length);
             setWordLength(length);
         })
-    
-        socket.on('guessResult', ({ result }) => {
+
+        socket.on('guessResult', ({ result, incorrect }) => {
             console.log('Returned from server = ' + result);
+            console.log('Returned from server = ' + incorrect);
+            setIncorrectCounter(incorrect.length)
+            setIncorrectGuesses(incorrect.join(' ').toUpperCase())
+            setCurrentWord(result)
         });
     }, [userDbId]);
 
@@ -38,10 +45,24 @@ const Game = ({ userDbId }) => {
         }
     };
 
-    const displayWord = (wordLength) => {
+    const displayWord = (wordLength, currentWord) => {
+        console.log('poop', currentWord)
         const wordDisplay = [];
-        for (let i = 0; i < wordLength; i++) {
-            wordDisplay.push(<li><span className='hidden'>1</span></li>);
+        if (currentWord && !currentWord.includes('1')){
+            // need to change isPlaying to false
+            return <h1>YOU WIN</h1>
+        } else if (currentWord) {
+            for (let i = 0; i < wordLength; i++) {
+                if (currentWord[i] === '1'){
+                    wordDisplay.push(<li><span className='hidden'>1</span></li>);
+                } else {
+                    wordDisplay.push(<li><span>{currentWord[i]}</span></li>)
+                }
+            }
+        }else {
+            for (let i = 0; i < wordLength; i++) {
+                wordDisplay.push(<li><span className='hidden'>1</span></li>);
+            }
         }
         return wordDisplay;
     };
@@ -50,15 +71,15 @@ const Game = ({ userDbId }) => {
         <main className='game card'>
             <h1>Guess the Word!</h1>
             <div>
-            { 
-                wordLength ? <ul>{displayWord(wordLength)}</ul> : null
-            }
-                <p>Attempted Letters: {} </p>
-                <p>Incorrect Guess Counter: {} </p>
+                {
+                    wordLength ? <ul>{displayWord(wordLength, currentWord)}</ul> : null
+                }
+                <p>Attempted Letters: {incorrectGuesses} </p>
+                <p>Incorrect Guess Counter: {incorrectCounter} </p>
             </div>
             <div>
                 <form action='post'>
-                    <input type='text' placeholder='Enter a letter or word' pattern="[A-Za-z]{1}" required />
+                    <input type='text' placeholder='Enter a letter' pattern="[A-Za-z]{1}" required />
                     <Button onClick={makeGuess} text='Submit' color='#dc8665' />
                 </form>
             </div>
