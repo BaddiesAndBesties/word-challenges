@@ -10,13 +10,13 @@ const jwtDecoder = require('./jwt');
 const { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores } = require('../database/mongoose');
 
 const port = process.env.PORT || 8080;
-const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
+const buildDir = path.join(__dirname, '..', 'client', 'build');
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(publicDir));
+app.use(express.static(path.join(buildDir)));
 
 // GET REQUEST FOR GOOGLE CLIENT ID (USED WHEN SIGNING IN)
 app.get('/google-client', (req, res) => {
@@ -66,7 +66,7 @@ app.get('/getTopScores', async (req, res) => {
 })
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(publicDir + 'index.html'));
+    res.sendFile(path.join(buildDir + 'index.html'));
 });
 
 // POST REQUEST FOR NEW USER / RETURNS EXISTING DATA IF USER IS ALREADY IN THE DATABASE
