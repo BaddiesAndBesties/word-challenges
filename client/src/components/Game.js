@@ -10,6 +10,21 @@ const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoi
     const [placeholder, setPlaceholder] = useState([]);
     const [remainingGuess, setRemainingGuess] = useState(7);
 
+    const updatePlayingStatus = () => {
+        // setIsPlaying(!isPlaying)
+        // setGameOver(false)
+        fetch(`/user/${userDbId}/playingStatus`, {
+          method: 'put',
+          headers: { 'Content-Type': 'application/json' },
+        })
+          .then((res) => {
+            return res.json();
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+
     useEffect(() => {
         socket.on('connect', () => {
             console.log('Socket connected: ' + socket.id); 
@@ -34,10 +49,12 @@ const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoi
             if (remainingGuess < 1) {
                 setGameOver(true);
                 setUserWon(false);
+                updatePlayingStatus()
             }
             if (placeholder.indexOf('_') < 0) {
                 setGameOver(true);
                 setUserWon(true);
+                updatePlayingStatus()
             }
         });
     }, [gameOver]);
