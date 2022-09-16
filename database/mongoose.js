@@ -76,11 +76,9 @@ const startNewGame = (id, word) => {
     {
         sort: {}, 
         upsert: false,
-    }, 
-    (err, result) => {
-        if (err) console.log(err)
-    });
-};
+    })
+        .then((res) => res)
+);
 
 const updatePlayingStatus = (id) => { // Change isPlaying to be opposite value (true or false) 
     User.findOneAndUpdate(
@@ -100,8 +98,8 @@ const updatePlayingStatus = (id) => { // Change isPlaying to be opposite value (
                 .then((res) => res)
         };
 
-const updateUserStat = (id, win, lose, gamePoint) => {
-    console.log({id, win, lose, gamePoint})
+
+const updateUserStat = (id, win, lose, gamePoint) => (
     User.findOneAndUpdate(
         {
             _id: new ObjectId(id)
@@ -115,16 +113,14 @@ const updateUserStat = (id, win, lose, gamePoint) => {
         }
     )
         .then((res) => res)
-    };
+);
 
 module.exports = { 
-    findUser, 
+    findUser,
     addUser, 
     getStats, 
     getCurrentGame, 
     getTopScores, 
     startNewGame, 
     updatePlayingStatus, 
-    updateUserStat 
-};
-
+    updateUserStat };

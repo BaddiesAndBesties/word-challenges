@@ -6,6 +6,7 @@ import Leaderboard from './Leaderboard';
 import Game from './Game';
 import { SocketProvider } from '../socketProvider';
 
+
 const App = () => {
 
     const [isSignedIn, setIsSignedIn] = useState(false);
@@ -26,6 +27,7 @@ const App = () => {
                     isSignedIn={isSignedIn}
                     showLeaderboard={showLeaderboard}
                     setShowLeaderboard={setShowLeaderboard}
+                    setSocket={setSocket}
                 />
                 {
                     isSignedIn

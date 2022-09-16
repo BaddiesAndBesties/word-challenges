@@ -2,7 +2,6 @@ import Button from './Button';
 import { useEffect, useState, useContext } from 'react';
 import { SocketContext } from '../socketProvider';
 
-
 // const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
 // const socket = io.connect('http://localhost:8080')
 
@@ -25,7 +24,7 @@ const Game = () => {
                 {
                     !isPlaying 
                         ?  
-                        userWon ? <h1>WIN</h1> : <h1>LOST</h1>
+                        userWon ? <h1>YOU WON</h1> : <h1>YOU LOST</h1>
                         :
                         <div>
                             <div id='game-screen'>
