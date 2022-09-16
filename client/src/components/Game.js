@@ -8,13 +8,13 @@ import { SocketContext } from '../socketProvider';
 
 const Game = () => {
     
-    const { socketConnection, remainingGuess, placeholder, incorrectGuesses, userWon, isPlaying } = useContext(SocketContext)
+    const { socketConnection, remainingGuess, placeholder, incorrectGuesses, userWon, isPlaying, userDbId } = useContext(SocketContext)
 
     const makeGuess = (e) => {
         if (document.querySelector('form').checkValidity()) {
             e.preventDefault();
             const letter = document.querySelector('input');
-            socketConnection.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
+            socketConnection.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess, id: userDbId });
             letter.value = '';
         }
     };

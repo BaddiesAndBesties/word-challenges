@@ -82,10 +82,10 @@ const startNewGame = (id, word) => {
     });
 };
 
-const updatePlayingStatus = (id) => ( // Change isPlaying to be opposite value (true or false) 
+const updatePlayingStatus = (id) => { // Change isPlaying to be opposite value (true or false) 
     User.findOneAndUpdate(
         {
-            _id: new ObjectId(id)
+            _id: id
         }, 
         [ 
             { "$set": 
@@ -98,7 +98,33 @@ const updatePlayingStatus = (id) => ( // Change isPlaying to be opposite value (
                 } 
             ])
                 .then((res) => res)
-);
+        };
 
-module.exports = { findUser, addUser, getStats, getCurrentGame, getTopScores, startNewGame, updatePlayingStatus };
+const updateUserStat = (id, win, lose, gamePoint) => {
+    console.log({id, win, lose, gamePoint})
+    User.findOneAndUpdate(
+        {
+            _id: new ObjectId(id)
+        },
+        {
+            $inc: {
+                point: gamePoint,
+                wins: win,
+                losses: lose,
+            }
+        }
+    )
+        .then((res) => res)
+    };
+
+module.exports = { 
+    findUser, 
+    addUser, 
+    getStats, 
+    getCurrentGame, 
+    getTopScores, 
+    startNewGame, 
+    updatePlayingStatus, 
+    updateUserStat 
+};
 
