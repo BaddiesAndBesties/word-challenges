@@ -4,6 +4,7 @@ import Scoreboard from './Scoreboard';
 import WeclomeMessage from './WeclomeMessage';
 import Leaderboard from './Leaderboard';
 import Game from './Game';
+import io from 'socket.io-client';
 
 const App = () => {
     const [isSignedIn, setIsSignedIn] = useState(false);
@@ -13,6 +14,7 @@ const App = () => {
     let [userWon, setUserWon] = useState(undefined);
     let [gamePoint, setGamePoint] = useState(0);
     let [showLeaderboard, setShowLeaderboard] = useState(true);
+    let [socket, setSocket] = useState(undefined);
 
     if (gameOver) {
         fetch(`/user/${userDbId}/update-stat`, {
@@ -48,6 +50,7 @@ const App = () => {
                     setGameOver={setGameOver}
                     showLeaderboard={showLeaderboard}
                     setShowLeaderboard={setShowLeaderboard}
+                    setSocket={setSocket}
                 />
                 {
                     isSignedIn 
@@ -60,7 +63,8 @@ const App = () => {
                                 setGameOver={setGameOver}
                                 userWon={userWon} 
                                 setUserWon={setUserWon}
-                                setGamePoint={setGamePoint} />
+                                setGamePoint={setGamePoint}
+                                socket={socket} />
                         :
                         <WeclomeMessage />
                 }

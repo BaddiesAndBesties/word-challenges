@@ -9,22 +9,17 @@ const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoi
     const [incorrectGuesses, setIncorrectGuesses] = useState([]);
     const [placeholder, setPlaceholder] = useState([]);
     const [remainingGuess, setRemainingGuess] = useState(7);
-
-    const updatePlayingStatus = () => {
-        // setIsPlaying(!isPlaying)
-        // setGameOver(false)
-        fetch(`/user/${userDbId}/playingStatus`, {
-          method: 'put',
-          headers: { 'Content-Type': 'application/json' },
-        })
-          .then((res) => {
-            return res.json();
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }
-
+    const socket = io.connect('http://localhost:8080'); 
+    
+    const makeGuess = (e) => {
+        if (document.querySelector('form').checkValidity()) {
+            e.preventDefault();
+            const letter = document.querySelector('input');
+            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
+            letter.value = '';
+        }
+    };
+    
     useEffect(() => {
         socket.on('connect', () => {
             console.log('Socket connected: ' + socket.id); 
@@ -49,24 +44,13 @@ const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoi
             if (remainingGuess < 1) {
                 setGameOver(true);
                 setUserWon(false);
-                updatePlayingStatus()
             }
             if (placeholder.indexOf('_') < 0) {
                 setGameOver(true);
                 setUserWon(true);
-                updatePlayingStatus()
             }
         });
     }, [gameOver]);
-        
-        const makeGuess = (e) => {
-            if (document.querySelector('form').checkValidity()) {
-                e.preventDefault();
-                const letter = document.querySelector('input');
-                socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
-                letter.value = '';
-            }
-        };
 
     return (
         <main className='game card'>

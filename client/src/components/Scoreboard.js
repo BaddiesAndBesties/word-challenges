@@ -3,7 +3,7 @@ import Instructions from './Instructions';
 import Button from './Button';
 import io from 'socket.io-client'
 
-const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, setShowLeaderboard }) => {
+const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, setSocket }) => {
   const socket = io.connect('http://localhost:8080'); 
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
@@ -30,9 +30,9 @@ const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, setShowLeader
   }, [gameOver, userDbId]);
 
   const startNewGame = () => {
-    // setIsPlaying(!isPlaying)
-    setGameOver(false)
-    fetch(`/user/${userDbId}/newGame`, {
+    setGameOver(false);
+    setSocket('http://localhost:8080');
+    fetch(`/user/${userDbId}/new-game`, {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
     })
@@ -57,23 +57,23 @@ const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, setShowLeader
         {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
 
       </div>
-      {/* {
+      {
         isSignedIn
           ?
-          // <div id='stats'>
-          //   <h3>Check out your Stats!</h3>
-          //   <div>
-          //     <ul>
-          //       <li>Wins: {wins}</li>
-          //       <li>Losses: {losses}</li>
-          //       <li>Total Games Played: {wins + losses}</li>
-          //     </ul>
-          //   </div>
-          //   <h4>Total Points: {point}</h4>
-          // </div>
+          <div id='stats'>
+            <h3>Check out your Stats!</h3>
+            <div>
+              <ul>
+                <li>Wins: {wins}</li>
+                <li>Losses: {losses}</li>
+                <li>Total Games Played: {wins + losses}</li>
+              </ul>
+            </div>
+            <h4>Total Points: {point}</h4>
+          </div>
           :
           null
-      } */}
+      }
     </section>
   )
 }

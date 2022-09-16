@@ -57,7 +57,7 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUse
         script.async = true;
         script.onload = initGsi;
         document.querySelector('body').appendChild(script);
-    }, [isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail, setUserDbId]);
+    }, []);
 
     return (
         <div id="gsi-container"></div>

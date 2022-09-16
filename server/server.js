@@ -69,8 +69,8 @@ app.get('/user/:id/currentGame', (req, res) => {
 app.get('/leaderboard/top-five', (req, res) => {
     getTopScores()
         .then((scores) => {
-            res.status(200)
-            res.send(JSON.stringify(scores))
+            res.status(200);
+            res.send(JSON.stringify(scores));
         })
         .catch((error) => {
             res.sendStatus(500);
@@ -130,12 +130,13 @@ app.post('/gsi', async (req, res) => {
 });
 
 // PUT REQUEST FOR NEW GAME
-app.put('/user/:id/newGame', async (req, res)=>{
+app.put('/user/:id/new-game', async (req, res) => {
     const { id } = req.params;
-    const newWord = await getNewWord()
-    updatePlayingStatus(id)
+    const newWord = await getNewWord();
+    updatePlayingStatus(id);
     startNewGame(id, newWord)
-        .then(() => {
+        .then((data) => {
+            console.log(data);
             res.sendStatus(201);
         })
         .catch((error) => {
@@ -200,7 +201,7 @@ io.on('connection', (socket) => {
     let placeholder = [];
     let incorrectGuesses = [];
 
-    socket.once('placeholder', async({ id }) => {
+    socket.on('placeholder', async({ id }) => {
         if (id) {
             secretWord = await getCurrentGame(id)
                 .then(({ game }) => {
@@ -214,7 +215,6 @@ io.on('connection', (socket) => {
             for (let i = 0; i < secretWord.length; i++) {
                 placeholder.push('_');
             }
-
             socket.emit('placeholder', { placeholder: placeholder });
         }
     });

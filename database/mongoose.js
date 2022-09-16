@@ -60,7 +60,7 @@ const getTopScores = async () => {
     return scores.length <= 5 ? scores : scores.slice(5);
 };
 
-const startNewGame = (id, word) => {
+const startNewGame = (id, word) => (
     User.findOneAndUpdate({
         _id: new mongoose.Types.ObjectId(id)
     },
@@ -75,11 +75,9 @@ const startNewGame = (id, word) => {
     {
         sort: {}, 
         upsert: false,
-    }, 
-    (err, result) => {
-        if (err) console.log(err)
-    });
-};
+    })
+        .then((res) => res)
+);
 
 const updatePlayingStatus = (id) => ( // Change isPlaying to be opposite value (true or false) 
     User.findOneAndUpdate(
@@ -124,4 +122,3 @@ module.exports = {
     startNewGame, 
     updatePlayingStatus, 
     updateUserStat };
-
