@@ -9,12 +9,6 @@ const App = () => {
     const [userEmail, setUserEmail] = useState(undefined);
     const [userDbId, setUserDbId] = useState(undefined);
     const [showLeaderboard, setShowLeaderboard] = useState(true);
-    const [showGame, setShowGame] = useState(false);
-
-    const setGameAndLeaderboard = () => {
-        setShowLeaderboard(!showLeaderboard)
-        setShowGame(!showGame)
-    };
 
     return (
         <div>
@@ -23,17 +17,17 @@ const App = () => {
                 setIsSignedIn={setIsSignedIn}
                 setUserEmail={setUserEmail}
                 setUserDbId={setUserDbId}
-                setGameAndLeaderboard={setGameAndLeaderboard}
-                showGame={showGame}
+                setShowLeaderboard={setShowLeaderboard}
+                showLeaderboard={showLeaderboard}
             />
             <div className='mainBody'>
                 <Scoreboard
                     isSignedIn={isSignedIn}
                     userDbId={userDbId}
-                    setGameAndLeaderboard={setGameAndLeaderboard}
-                    showGame={showGame}
+                    setShowLeaderboard={setShowLeaderboard}
+                    showLeaderboard={showLeaderboard}
                 />
-            {showLeaderboard ? <Leaderboard setGameAndLeaderboard={setGameAndLeaderboard} /> : <Game userDbId={userDbId} />}
+                {showLeaderboard ? <Leaderboard /> : <Game userDbId={userDbId} />}
             </div>
         </div>
     );
