@@ -27,7 +27,6 @@ const App = () => {
                     isSignedIn={isSignedIn}
                     showLeaderboard={showLeaderboard}
                     setShowLeaderboard={setShowLeaderboard}
-                    setSocket={setSocket}
                 />
                 {
                     isSignedIn

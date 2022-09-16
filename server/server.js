@@ -240,7 +240,7 @@ io.on('disconnet', () => {
     console.log('socket disconnected');
 });
 
-// Get new word from an external API. (Returns a prmise)
+// Get new word from an external API. (Returns a promise)
 const getNewWord = () => {
     const randomWordUrl = 'https://random-word-api.herokuapp.com/word';
     return new Promise((resolve, reject) => {

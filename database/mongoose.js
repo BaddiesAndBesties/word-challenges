@@ -78,7 +78,7 @@ const startNewGame = (id, word) => {
         upsert: false,
     })
         .then((res) => res)
-);
+};
 
 const updatePlayingStatus = (id) => ( // Change isPlaying to be opposite value (true or false) 
     User.findOneAndUpdate(

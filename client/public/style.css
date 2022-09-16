@@ -1,6 +1,6 @@
 *{
     box-sizing: border-box;
-    padding: 0;
+    /* padding: 0; */
 }
 html{
     background-color: #eeb462;
@@ -73,7 +73,7 @@ main {
 }
 
 .btn {
-display: inline-block;
+display: block;
 outline: none;
 cursor: pointer;
 font-weight: 600;
@@ -101,7 +101,7 @@ text-align: center;
 }
 .scoreboard .btn-container {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: center;
 }
 
