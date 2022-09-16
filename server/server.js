@@ -9,7 +9,7 @@ const cors = require("cors");
 const jwtDecoder = require('./jwt');
 const { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores } = require('../database/mongoose');
 
-const port = process.env.PORT;
+const port = process.env.PORT || 8080;
 const buildDir = path.join(__dirname, '..', 'client', 'build/');
 const app = express();
 
@@ -131,7 +131,7 @@ const server = app.listen(port, () => {
 // SOCKET.IO
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "https://word-challenges.herokuapp.com",
         methods: ["GET", "POST"],
     },
 });

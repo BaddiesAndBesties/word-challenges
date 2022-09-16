@@ -2,7 +2,7 @@ import Button from './Button';
 import io from 'socket.io-client'
 import { useEffect, useState } from 'react';
 
-const socket = io.connect(":8080");
+const socket = io.connect("https://word-challenges.herokuapp.com");
 
 const Game = ({ userDbId }) => {
     const [wordLength, setWordLength] = useState(undefined);
