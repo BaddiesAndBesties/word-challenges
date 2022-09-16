@@ -49,6 +49,23 @@ const Game = ({ userDbId }) => {
         const wordDisplay = [];
         if (currentWord && !currentWord.includes('1')) {
             // need to change isPlaying to false
+            //fetch get
+            //sending the isPLaying var back
+            let resp = fetch('/getIsPlaying', {
+                method: 'put', 
+                headers:{
+                    'Content-Type': 'application/json'
+                }, 
+                body: JSON.stringify({
+                    'id': userDbId
+                })
+            })
+            .then(response =>{
+                console.log("userDbId is", userDbId);
+                if(response.ok) console.log("ok");
+                // return response.json()
+            })
+            
             return <h1>YOU WIN</h1>
         } else if (currentWord && incorrectCounter === 8) {
             return <h1>YOU LOSE</h1>
@@ -67,6 +84,7 @@ const Game = ({ userDbId }) => {
         }
         return wordDisplay;
     };
+    displayWord()
 
     return (
         <main className='game card'>

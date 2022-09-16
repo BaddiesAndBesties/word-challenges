@@ -83,5 +83,5 @@ const getTopScores = async () => {
     return scores.length <= 5 ? scores : scores.slice(5)
 }
 
-module.exports = { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores };
+module.exports = { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores};
 
