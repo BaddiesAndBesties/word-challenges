@@ -131,7 +131,8 @@ const server = app.listen(port, () => {
 // SOCKET.IO
 const io = new Server(server, {
     cors: {
-        origin: "https://word-challenges.herokuapp.com",
+        // origin: "https://word-challenges.herokuapp.com",
+        origin: `http://localhost:${port}`,
         methods: ["GET", "POST"],
     },
 });

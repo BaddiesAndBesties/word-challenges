@@ -2,7 +2,8 @@ import Button from './Button';
 import io from 'socket.io-client'
 import { useEffect, useState } from 'react';
 
-const socket = io.connect("https://word-challenges.herokuapp.com");
+// const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
+const socket = io.connect(':3000'); 
 
 const Game = ({ userDbId }) => {
     const [wordLength, setWordLength] = useState(undefined);
@@ -11,7 +12,6 @@ const Game = ({ userDbId }) => {
     const [currentWord, setCurrentWord] = useState(undefined)
 
     useEffect(() => {
-        // console.log(userDbId);
         socket.on('connect', () => {
             console.log('Socket connected: ' + socket.id); // x8WIv7-mJelg7on_ALbx
         });
@@ -46,7 +46,6 @@ const Game = ({ userDbId }) => {
     };
 
     const displayWord = (wordLength, currentWord, incorrectCounter) => {
-        console.log('poop', currentWord)
         const wordDisplay = [];
         if (currentWord && !currentWord.includes('1')) {
             // need to change isPlaying to false
@@ -73,19 +72,15 @@ const Game = ({ userDbId }) => {
         <main className='game card'>
             <h1>Guess the Word!</h1>
             <div>
-
                 <ul>{displayWord(wordLength, currentWord, incorrectCounter)}</ul>
-
                 <p>Attempted Letters: {incorrectGuesses} </p>
                 <p>Incorrect Guess Counter: {incorrectCounter} </p>
             </div>
             <div>
-
                 <form action='post'>
                     <input type='text' placeholder='Enter a letter' pattern="[A-Za-z]{1}" required />
                     <Button onClick={makeGuess} text='Submit' color='#dc8665' />
                 </form>
-
             </div>
         </main>
     );
