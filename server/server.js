@@ -180,13 +180,15 @@ io.on('connection', (socket) => {
     socket.on('userGuess', ({ letter, remainingGuess }) => {
         let prevIncorrectNum = incorrectGuesses.length;
         for (let i = 0; i < secretWord.length; i++) {
-            if (incorrectGuesses.indexOf(letter) < 0) {
+            if (incorrectGuesses.indexOf(letter) < 0 && secretWord.indexOf(letter) < 0) {
                 incorrectGuesses.push(letter);
             }
             if (secretWord[i] === letter) {
                 placeholder[i] = letter;
             }
         }
+        console.log('PREV = ' + prevIncorrectNum);
+        console.log('CURR = ' + incorrectGuesses.length);
         if (prevIncorrectNum < incorrectGuesses.length) {
             remainingGuess--;
         }
