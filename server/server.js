@@ -139,7 +139,7 @@ app.put('/user/:id/update-playing', async (req, res)=>{
             console.log('Updating user playing status - FAILED');
             console.error(error);
             res.sendStatus(400);
-        })
+        });
 });
 
 // SOCKET.IO

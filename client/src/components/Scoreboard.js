@@ -45,7 +45,7 @@ const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, showLeaderboa
         {
           !isSignedIn ? null : gameOver
               ? <Button text='Another Game' onClick={startNewGame} />
-              : <Button text='New Game' onClick={startNewGame} />
+              : <Button text='Start Game' onClick={startNewGame} />
         }
         <Button text='Instructions' onClick={() => setShowInstructions(true)} />
         {
