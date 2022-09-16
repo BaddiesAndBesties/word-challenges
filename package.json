@@ -16,6 +16,8 @@
     "nodemon": "^2.0.19"
   },
   "scripts": {
+    "start": "node ./server/server.js",
+    "build": "cd ./client && npm i && npm start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./server/server.js"
   },
