@@ -1,19 +1,15 @@
 import Button from './Button';
-import io from 'socket.io-client'
 import { useEffect, useState } from 'react';
 
 // const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
-const socket = io.connect('http://localhost:8080'); 
 
-const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoint }) => {
+const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoint, socket }) => {
     const [incorrectGuesses, setIncorrectGuesses] = useState([]);
     const [placeholder, setPlaceholder] = useState([]);
     const [remainingGuess, setRemainingGuess] = useState(7);
 
     const updatePlayingStatus = () => {
-        // setIsPlaying(!isPlaying)
-        // setGameOver(false)
-        fetch(`/user/${userDbId}/playingStatus`, {
+        fetch(`/user/:id/update-playing`, {
           method: 'put',
           headers: { 'Content-Type': 'application/json' },
         })
@@ -57,17 +53,17 @@ const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoi
                 updatePlayingStatus()
             }
         });
-    }, [gameOver]);
+    }, [gameOver, socket]);
         
-        const makeGuess = (e) => {
-            if (document.querySelector('form').checkValidity()) {
-                e.preventDefault();
-                const letter = document.querySelector('input');
-                socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
-                letter.value = '';
-            }
-        };
-
+    const makeGuess = (e) => {
+        if (document.querySelector('form').checkValidity()) {
+            e.preventDefault();
+            const letter = document.querySelector('input');
+            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
+            letter.value = '';
+        }
+    };
+ 
     return (
         <main className='game card'>
             <div>
