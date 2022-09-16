@@ -1,6 +1,6 @@
-const { ObjectID } = require('bson');
 const mongoose = require('mongoose');
 const { User } = require('./models');
+const { ObjectID } = require('bson');
 require('dotenv').config();
 
 mongoose.connect(process.env.MONGODB);
@@ -48,12 +48,12 @@ const getStats = (id) => (
         .then(({ point, wins, losses, isPlaying }) => ({ point, wins, losses, isPlaying }))
 );
 
-const getCurrentGame = (id) => {
+const getCurrentGame = (id) => (
     User.findOne({
         _id: new ObjectId(id)
     })
-    .then(({ game }) => ({ game }))
-};
+        .then(({ game }) => ({ game }))
+);
 
 const startNewGame = (id, word) => {
     console.log(word, 'id: ' + id)
@@ -61,7 +61,6 @@ const startNewGame = (id, word) => {
         _id: new mongoose.Types.ObjectId(id)
     },
     {
-        
         $set: {
             isPlaying: true,
             game: {
@@ -79,5 +78,6 @@ const startNewGame = (id, word) => {
     }
     )
 }
+
 
 module.exports = { findUser, addUser, getStats, getCurrentGame, startNewGame };
