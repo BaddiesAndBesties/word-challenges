@@ -14,7 +14,7 @@ const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, showLeaderboa
         .then((res) => {
           return res.json();
         })
-        .then(({ point, wins, losses, isPlaying }) => {
+        .then(({ point, wins, losses }) => {
           setPoint(point);
           setWins(wins);
           setLosses(losses);

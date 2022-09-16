@@ -5,10 +5,9 @@ import { useEffect, useState } from 'react';
 // const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
 const socket = io.connect('http://localhost:8080'); 
 
-const Game = ({ userDbId, gameOver, setGameOver }) => {
+const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoint }) => {
     const [incorrectGuesses, setIncorrectGuesses] = useState([]);
     const [placeholder, setPlaceholder] = useState([]);
-    const [userWon, setUserWon] = useState(undefined);
     const [remainingGuess, setRemainingGuess] = useState(7);
 
     useEffect(() => {
@@ -24,6 +23,7 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
 
         socket.once('placeholder', ({ placeholder }) => {
             setRemainingGuess(placeholder.length);
+            setGamePoint(placeholder.length);
             setPlaceholder(placeholder);
         });
 
@@ -35,13 +35,12 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
                 setGameOver(true);
                 setUserWon(false);
             }
-            console.log(placeholder);
             if (placeholder.indexOf('_') < 0) {
                 setGameOver(true);
                 setUserWon(true);
             }
         });
-    }, []);
+    }, [gameOver, userDbId]);
 
     const makeGuess = (e) => {
         if (document.querySelector('form').checkValidity()) {
@@ -58,7 +57,7 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
                 {
                     gameOver 
                         ?  
-                        userWon ? <h1>WIN</h1> : <h1>LOST</h1>
+                        userWon ? <h1>YOU WON</h1> : <h1>YOU LOST</h1>
                         :
                         <div>
                             <div id='game-screen'>

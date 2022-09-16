@@ -14,7 +14,8 @@ const {
     getCurrentGame, 
     getTopScores,
     startNewGame, 
-    updatePlayingStatus } = require('../database/mongoose');
+    updatePlayingStatus,
+    updateUserStat } = require('../database/mongoose');
 
 const port = process.env.PORT || 8080;
 const buildDir = path.join(__dirname, '..', 'client', 'build/');
@@ -129,7 +130,7 @@ app.post('/gsi', async (req, res) => {
 });
 
 // PUT REQUEST FOR USER PLAYING STATUS
-app.put('/user/:id/update-playing', async (req, res)=>{
+app.put('/user/:id/update-playing', async (req, res) => {
     const { id } = req.params;
     updatePlayingStatus(id)
         .then(() => {
@@ -137,6 +138,31 @@ app.put('/user/:id/update-playing', async (req, res)=>{
         })
         .catch((error) => {
             console.log('Updating user playing status - FAILED');
+            console.error(error);
+            res.sendStatus(400);
+        });
+});
+
+app.put('/user/:id/update-stat', async (req, res) => {
+    const { id } = req.params;
+    const { result, point } = req.body;
+    let win, lose;
+    if (result) {
+        win = 1;
+        lose = 0;
+    } else {
+        win = 0;
+        lose = 1;
+    }
+    updateUserStat(id, win, lose, point)
+        .then(({ _id }) => {
+            res.status(201);
+            res.send(JSON.stringify({
+                mongoId: _id.toString()
+            }));
+        })
+        .catch((error) => {
+            console.log('Updating user stats - FAILED');
             console.error(error);
             res.sendStatus(400);
         });
@@ -162,7 +188,7 @@ io.on('connection', (socket) => {
         if (id) {
             secretWord = await getCurrentGame(id)
                 .then(({ game }) => {
-                    console.log(game.word);
+                    console.log(game.word); // For testing purposes
                     return game.word.split('');
                 })
                 .catch((error) => {
@@ -187,8 +213,6 @@ io.on('connection', (socket) => {
                 placeholder[i] = letter;
             }
         }
-        console.log('PREV = ' + prevIncorrectNum);
-        console.log('CURR = ' + incorrectGuesses.length);
         if (prevIncorrectNum < incorrectGuesses.length) {
             remainingGuess--;
         }
