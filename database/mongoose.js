@@ -58,15 +58,26 @@ const getCurrentGame = (id) => (
 const startNewGame = (id, word) => {
     console.log(word, 'id: ' + id)
     User.findOneAndUpdate({
-        _id: new ObjectId(id)
+        _id: new mongoose.Types.ObjectId(id)
     },
     {
-        // isPlaying: true,
-        game: {
-            word: word,
-            guess: [],
-        },
-    })
-};
+        $set: {
+            isPlaying: true,
+            game: {
+                word: word,
+                guess: [],
+            },
+        }
+    }, 
+    {
+        sort: {}, 
+        upsert: false,
+    }, 
+    (err, result)=>{
+        if (err) console.log(err)
+    }
+    )
+}
+
 
 module.exports = { findUser, addUser, getStats, getCurrentGame, startNewGame };
