@@ -16,6 +16,7 @@ const {
     startNewGame,
     updatePlayingStatus } = require('../database/mongoose');
 
+
 const port = process.env.PORT || 8080;
 const buildDir = path.join(__dirname, '..', 'client', 'build/');
 const app = express();
@@ -68,8 +69,8 @@ app.get('/user/:id/currentGame', (req, res) => {
 app.get('/leaderboard/top-five', (req, res) => {
     getTopScores()
         .then((scores) => {
-            res.status(200)
-            res.send(JSON.stringify(scores))
+            res.status(200);
+            res.send(JSON.stringify(scores));
         })
         .catch((error) => {
             res.sendStatus(500);
@@ -144,7 +145,32 @@ app.put('/user/:id/playingStatus', async (req, res) => {
             console.log('Updating user playing status - FAILED');
             console.error(error);
             res.sendStatus(400);
+        });
+});
+
+app.put('/user/:id/update-stat', async (req, res) => {
+    const { id } = req.params;
+    const { result, point } = req.body;
+    let win, lose;
+    if (result) {
+        win = 1;
+        lose = 0;
+    } else {
+        win = 0;
+        lose = 1;
+    }
+    updateUserStat(id, win, lose, point)
+        .then(({ _id }) => {
+            res.status(201);
+            res.send(JSON.stringify({
+                mongoId: _id.toString()
+            }));
         })
+        .catch((error) => {
+            console.log('Updating user stats - FAILED');
+            console.error(error);
+            res.sendStatus(400);
+        });
 });
 
 // SOCKET.IO
@@ -166,11 +192,12 @@ io.on('connection', (socket) => {
 
     socket.on('placeholder', async ({ id }) => {
         console.log('before if', id)
+
         if (id) {
             console.log('after if')
             secretWord = await getCurrentGame(id)
                 .then(({ game }) => {
-                    console.log(game.word);
+                    console.log(game.word); // For testing purposes
                     return game.word.split('');
                 })
                 .catch((error) => {
@@ -181,7 +208,6 @@ io.on('connection', (socket) => {
             for (let i = 0; i < secretWord.length; i++) {
                 placeholder.push('_');
             }
-
             socket.emit('placeholder', { placeholder: placeholder });
         }
     });
@@ -203,8 +229,6 @@ io.on('connection', (socket) => {
                 placeholder[i] = letter;
             }
         }
-        console.log('PREV = ' + prevIncorrectNum);
-        console.log('CURR = ' + incorrectGuesses.length);
         if (prevIncorrectNum < incorrectGuesses.length) {
             remainingGuess--;
         }
