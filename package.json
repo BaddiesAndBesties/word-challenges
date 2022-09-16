@@ -18,11 +18,10 @@
     "nodemon": "^2.0.19"
   },
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd client && npm i && npm run build",
+    "start": "node ./server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "node ./server/server.js",
-    "dev": "nodemon ./server/server.js",
-    "client": "cd client && npm i && npm run build"
+    "dev": "concurrently \"nodemon ./server/server.js\" \"cd client && npm i && npm run start\""
   },
   "repository": {
     "type": "git",
