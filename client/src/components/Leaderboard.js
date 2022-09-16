@@ -1,36 +1,38 @@
-const Leaderboard = (setGameAndLeaderboard) => {
+const Leaderboard = async (setGameAndLeaderboard) => {
     
 
-    const getTopScores = () => {
-        fetch('/getTopScores')
-        .then((res) => {
-            return res.json()
-        })
-        .then(data => {
-            console.log(data)
-        })
-        .catch((error) => {
-            console.error(error)
-        })
-    }
+    const getTopScores = async (req, res) => {
+        // return new Promise ( (resolve, reject)=>{
 
-    const addTopPlayers = () => {
-        console.log(getTopScores())
-        const topPlayers = ['Will', 'Dennis', 'Kelly', 'Italians', 'Dogs'];
-        const topPoints = [100, 90, 80, 70, 60];
-        const players = [];
-        for (let i = 0; i < topPlayers.length; i++) {
-            players.push(<li>{topPlayers[i]}: {topPoints[i]} points</li>);
+            let response = await fetch('/getTopScores')
+            let responseText = await response.json()
+            console.log("RSPNSE", responseText);
+            return responseText
         }
-        getTopScores()
+
+    const addTopPlayers = async () => {
+        console.log("top scores", await getTopScores())
+        let topScores = await getTopScores()
+        const players = [];
+        for (let i = 0; i < topScores.length; i++) {
+            players.push(<li>{topScores[i].given_name}: {topScores[i].point} points</li>);
+            console.log("top scoresssssssss", topScores[i].point);
+        }
+        console.log("PLAYERS", players);
+    
+        for(let i=0; i<players.length; i++){
+            players[i]
+        }
         return players;
     }
+    console.log(addTopPlayers())
     return (
         <main className='leaderboard card'>
             <h1>LEADERBOARD</h1>
-            <ol>{addTopPlayers()}</ol>
+            <ol>{(await addTopPlayers()).map(onePlayer => onePlayer)}</ol>
         </main>
     );
 };
+
 
 export default Leaderboard;
