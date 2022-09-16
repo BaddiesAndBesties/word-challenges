@@ -18,8 +18,9 @@
     "nodemon": "^2.0.19"
   },
   "scripts": {
-    "start": "concurrently \"npm run dev\" \"npm run client\"",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node ./server/server.js",
     "dev": "nodemon ./server/server.js",
     "client": "cd client && npm i && npm run build"
   },
