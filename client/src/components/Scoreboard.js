@@ -29,7 +29,7 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
           console.error(error);
         });
     }
-  }, [userDbId]);
+  }, [userDbId, point, wins, losses]);
 
   const startNewGame = () => {
     socketConnection.emit('newGame', {id: userDbId})
@@ -51,17 +51,17 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
       {/* {
         isSignedIn
           ?
-          // <div id='stats'>
-          //   <h3>Check out your Stats!</h3>
-          //   <div>
-          //     <ul>
-          //       <li>Wins: {wins}</li>
-          //       <li>Losses: {losses}</li>
-          //       <li>Total Games Played: {wins + losses}</li>
-          //     </ul>
-          //   </div>
-          //   <h4>Total Points: {point}</h4>
-          // </div>
+          <div id='stats'>
+            <h3>Check out your Stats!</h3>
+            <div>
+              <ul>
+                <li>Wins: {wins}</li>
+                <li>Losses: {losses}</li>
+                <li>Total Games Played: {wins + losses}</li>
+              </ul>
+            </div>
+            <h4>Total Points: {point}</h4>
+          </div>
           :
           null
       } */}
