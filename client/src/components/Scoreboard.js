@@ -7,7 +7,7 @@ const Scoreboard = ({ isSignedIn, userDbId, setShowLeaderboard, showLeaderboard 
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
   const [losses, setLosses] = useState(undefined);
-  const [isPlaying, setIsPlaying] = useState(undefined)
+  const [isPlaying, setIsPlaying] = useState(undefined);
 
   useEffect(() => {
     if (userDbId) {
@@ -43,33 +43,31 @@ const Scoreboard = ({ isSignedIn, userDbId, setShowLeaderboard, showLeaderboard 
 
   return (
     <section className='scoreboard card'>
-      <div className='btnContainer'>
+      <div className='btn-container'>
         {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={startNewGame} />}
-
-
-        { (userDbId && isSignedIn) && <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} onClick={() => setShowLeaderboard(!showLeaderboard)} />}
+        {(userDbId && isSignedIn) && <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} onClick={() => setShowLeaderboard(!showLeaderboard)} />}
 
         <Button text='Instructions' onClick={() => setShowInstructions(true)} />
         {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
 
       </div>
-      {/* {
+      {
         isSignedIn
           ?
-          // <div id='stats'>
-          //   <h3>Check out your Stats!</h3>
-          //   <div>
-          //     <ul>
-          //       <li>Wins: {wins}</li>
-          //       <li>Losses: {losses}</li>
-          //       <li>Total Games Played: {wins + losses}</li>
-          //     </ul>
-          //   </div>
-          //   <h4>Total Points: {point}</h4>
-          // </div>
+          <div id='stats'>
+            <h3>Check out your Stats!</h3>
+            <div>
+              <ul>
+                <li>Wins: {wins}</li>
+                <li>Losses: {losses}</li>
+                <li>Total Games Played: {wins + losses}</li>
+              </ul>
+            </div>
+            <h4>Total Points: {point}</h4>
+          </div>
           :
           null
-      } */}
+      }
     </section>
   )
 }

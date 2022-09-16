@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import Header from './Header';
+import Scoreboard from './Scoreboard';
+import WeclomeMessage from './WeclomeMessage';
 import Leaderboard from './Leaderboard';
 import Game from './Game';
-import Scoreboard from './Scoreboard';
 
 const App = () => {
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [userEmail, setUserEmail] = useState(undefined);
     const [userDbId, setUserDbId] = useState(undefined);
     const [showLeaderboard, setShowLeaderboard] = useState(true);
+    const [gameOver, setGameOver] = useState(false);
 
     return (
         <div>
@@ -20,14 +22,22 @@ const App = () => {
                 setShowLeaderboard={setShowLeaderboard}
                 showLeaderboard={showLeaderboard}
             />
-            <div className='mainBody'>
+            <div id='main-screen'>
                 <Scoreboard
                     isSignedIn={isSignedIn}
                     userDbId={userDbId}
                     setShowLeaderboard={setShowLeaderboard}
                     showLeaderboard={showLeaderboard}
                 />
-                {showLeaderboard ? <Leaderboard /> : <Game userDbId={userDbId} />}
+                {
+                    isSignedIn 
+                        ?
+                            showLeaderboard 
+                            ? <Leaderboard isSignedIn={isSignedIn} /> 
+                            : <Game userDbId={userDbId} gameOver={gameOver} setGameOver={setGameOver} />
+                        :
+                        <WeclomeMessage />
+                }
             </div>
         </div>
     );

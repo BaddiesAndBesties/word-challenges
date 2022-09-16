@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const Leaderboard = () => {
+const Leaderboard = ({ isSignedIn }) => {
     const [topPlayers, SetTopPlayers] = useState([]);
     
     const getTopScores = async () => {
@@ -17,7 +17,6 @@ const Leaderboard = () => {
         const players = [];
         getTopScores()   
             .then((topScores) => {
-                console.log(topScores);
                 for (let i = 0; i < topScores.length; i++) {
                     players.push(<li>{topScores[i].given_name}: {topScores[i].point} points</li>);
                 }

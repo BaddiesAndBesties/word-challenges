@@ -173,7 +173,7 @@ const server = app.listen(port, () => {
 const io = new Server(server, {
     cors: {
         // origin: "https://word-challenges.herokuapp.com",
-        origin: `http://localhost:${port}`,
+        origin: `http://localhost:3000`,
         methods: ["GET", "POST"],
     },
 });

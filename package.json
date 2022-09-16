@@ -21,7 +21,7 @@
     "build": "cd client && npm i && npm run build",
     "start": "node ./server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"nodemon ./server/server.js\" \"cd client && npm i && npm run start\""
+    "dev": "nodemon ./server/server.js"
   },
   "repository": {
     "type": "git",
