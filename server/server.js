@@ -158,7 +158,7 @@ io.on('connection', (socket) => {
     let placeholder = [];
     let incorrectGuesses = [];
 
-    socket.on('placeholder', async({ id }) => {
+    socket.once('placeholder', async({ id }) => {
         if (id) {
             secretWord = await getCurrentGame(id)
                 .then(({ game }) => {
@@ -190,7 +190,7 @@ io.on('connection', (socket) => {
         if (prevIncorrectNum < incorrectGuesses.length) {
             remainingGuess--;
         }
-        socket.emit('guessResult', { result: placeholder, incorrect: incorrectGuesses, remainingGuess: remainingGuess });
+        socket.emit('guessResult', { placeholder: placeholder, incorrect: incorrectGuesses, remainingGuess: remainingGuess });
     });
 });
 

@@ -6,10 +6,9 @@ import { useEffect, useState } from 'react';
 const socket = io.connect('http://localhost:8080'); 
 
 const Game = ({ userDbId, gameOver, setGameOver }) => {
-    const [wordLength, setWordLength] = useState(0);
     const [incorrectGuesses, setIncorrectGuesses] = useState([]);
     const [placeholder, setPlaceholder] = useState([]);
-    const [gameResult, setGameResult] = useState(undefined);
+    const [userWon, setUserWon] = useState(undefined);
     const [remainingGuess, setRemainingGuess] = useState(7);
 
     useEffect(() => {
@@ -23,17 +22,24 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
 
         socket.emit('placeholder', ({ id: userDbId }));
 
-        socket.on('placeholder', ({ placeholder }) => {
-            console.log(placeholder);
-            setWordLength(placeholder.length);
+        socket.once('placeholder', ({ placeholder }) => {
             setRemainingGuess(placeholder.length);
             setPlaceholder(placeholder);
         });
 
-        socket.on('guessResult', ({ result, incorrect, remainingGuess }) => {
-            setPlaceholder(result);
+        socket.on('guessResult', ({ placeholder, incorrect, remainingGuess }) => {
+            setPlaceholder(placeholder);
             setIncorrectGuesses(incorrect.join(' ').toUpperCase());
             setRemainingGuess(remainingGuess);
+            if (remainingGuess < 1) {
+                setGameOver(true);
+                setUserWon(false);
+            }
+            console.log(placeholder);
+            if (placeholder.indexOf('_') < 0) {
+                setGameOver(true);
+                setUserWon(true);
+            }
         });
     }, []);
 
@@ -46,22 +52,14 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
         }
     };
 
-    const displayGameResult = () => {
-        if (gameResult === 'won') {
-            return <h1>YOU WIN</h1>
-        }
-        if (gameResult === 'loss') {
-            return <h1>YOU LOSE</h1>
-        }
-    };
-
     return (
         <main className='game card'>
-            {
-                gameOver 
-                    ?
-                        displayGameResult()
-                    : 
+            <div>
+                {
+                    gameOver 
+                        ?  
+                        userWon ? <h1>WIN</h1> : <h1>LOST</h1>
+                        :
                         <div>
                             <div id='game-screen'>
                                 <h1>Guess the Word!</h1>
@@ -86,7 +84,8 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
                                 </form>
                             </div>
                         </div>
-            }
+                }
+            </div>
         </main>
     );
 };
