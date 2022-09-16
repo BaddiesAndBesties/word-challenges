@@ -9,7 +9,7 @@ const cors = require("cors");
 const jwtDecoder = require('./jwt');
 const { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores } = require('../database/mongoose');
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT;
 const buildDir = path.join(__dirname, '..', 'client', 'build');
 const app = express();
 
