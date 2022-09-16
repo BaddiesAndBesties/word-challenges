@@ -4,6 +4,8 @@ const express = require('express');
 const https = require('https');
 const path = require('path');
 const bodyParser = require('body-parser');
+const { Server } = require("socket.io");
+const cors = require("cors");
 const jwtDecoder = require('./jwt');
 const { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores } = require('../database/mongoose');
 
@@ -11,6 +13,7 @@ const port = process.env.PORT || 8080;
 const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(publicDir));
@@ -126,23 +129,42 @@ const server = app.listen(port, () => {
 });
 
 // SOCKET.IO
-const { Server } = require("socket.io");
-const cors = require("cors");
-app.use(cors());
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:3000",
         methods: ["GET", "POST"],
     },
-})
-io.on("connection", (socket) => {
-    console.log(`user connected: ${socket.id}`);
-
-    socket.on('userGuess', ({ letter }) => {
-        socket.emit('guessResult', { result: letter });
-    });
 });
 
+io.on('connection', (socket) => {
+    console.log(`user connected: ${socket.id}`);
+
+    let secretWord;
+
+    socket.on('wordLength', async({ id }) => {
+        if (id) {
+            console.log('DB ID PROVIDED: ' + id);
+            secretWord = await getCurrentGame(id)
+                .then(({ game }) => game.word)
+                .catch((error) => {
+                    console.log('Getting user game data FAILED');
+                    console.error(error);
+                });
+        socket.emit('wordLength', { length: secretWord.length });
+        }
+    })
+
+    socket.on('userGuess', async ({ letter }) => {
+        const currIndexs = [...secretWord.matchAll(new RegExp(letter, 'gi'))].map(a => a.index);
+        socket.emit('guessResult', { result: currIndexs });
+    });
+
+});
+
+
+io.on('disconnet', () => {
+    console.log('socket disconnected');
+})
 
 // GET NEW WORD FROM API
 const getNewWord = () => {

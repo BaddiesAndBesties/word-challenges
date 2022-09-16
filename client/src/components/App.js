@@ -31,7 +31,7 @@ const App = () => {
                     setGameAndLeaderboard={setGameAndLeaderboard} 
                     showGame={showGame} 
                 />
-                {showLeaderboard ? 
+                {!userDbId ? 
                 <Leaderboard setGameAndLeaderboard={setGameAndLeaderboard} /> : <Game userDbId={userDbId} />}
             </div>
         </div>
