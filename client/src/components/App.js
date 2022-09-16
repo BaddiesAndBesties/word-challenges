@@ -11,12 +11,6 @@ const App = () => {
     const [showLeaderboard, setShowLeaderboard] = useState(true);
     const [showGame, setShowGame] = useState(false);
 
-    const setHome = () => {
-        setShowLeaderboard(true)
-        setShowGame(false)
-    }
-
-
     const setGameAndLeaderboard = () => {
         setShowLeaderboard(!showLeaderboard)
         setShowGame(!showGame)
@@ -39,9 +33,7 @@ const App = () => {
                     setGameAndLeaderboard={setGameAndLeaderboard}
                     showGame={showGame}
                 />
-
-                {/* {!userDbId && setHome()} */}
-                {showLeaderboard ? <Leaderboard setGameAndLeaderboard={setGameAndLeaderboard} /> : <Game userDbId={userDbId} />}
+            {showLeaderboard ? <Leaderboard setGameAndLeaderboard={setGameAndLeaderboard} /> : <Game userDbId={userDbId} />}
             </div>
         </div>
     );

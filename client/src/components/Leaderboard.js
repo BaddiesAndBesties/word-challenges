@@ -1,34 +1,34 @@
+import { useEffect, useState } from "react";
+
 const Leaderboard = () => {
+    const [topPlayers, SetTopPlayers] = useState([]);
     
+    const getTopScores = async () => {
+        const topScores = await fetch('/getTopScores')
+            .then((res) => res.json())
+            .then(data => data)
+            .catch((error) => {
+                console.error(error)
+            });
+        return topScores;
+    };
 
-    const getTopScores = () => {
-        fetch('/getTopScores')
-        .then((res) => {
-            return res.json()
-        })
-        .then(data => {
-            console.log(data)
-        })
-        .catch((error) => {
-            console.error(error)
-        })
-    }
-
-    const addTopPlayers = () => {
-        console.log(getTopScores())
-        const topPlayers = ['Will', 'Dennis', 'Kelly', 'Italians', 'Dogs'];
-        const topPoints = [100, 90, 80, 70, 60];
+    useEffect(() => {
         const players = [];
-        for (let i = 0; i < topPlayers.length; i++) {
-            players.push(<li>{topPlayers[i]}: {topPoints[i]} points</li>);
-        }
-        getTopScores()
-        return players;
-    }
+        getTopScores()   
+            .then((topScores) => {
+                console.log(topScores);
+                for (let i = 0; i < topScores.length; i++) {
+                    players.push(<li>{topScores[i].given_name}: {topScores[i].point} points</li>);
+                }
+            });
+        SetTopPlayers(players);
+    }, [])
+
     return (
         <main className='leaderboard card'>
             <h1>LEADERBOARD</h1>
-            <ol>{addTopPlayers()}</ol>
+            <ul>{topPlayers}</ul>
         </main>
     );
 };
