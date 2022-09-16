@@ -3,13 +3,14 @@ import GoogleSignIn from "./GoogleSignIn";
 import Button from "./Button";
 
 
-const Header = ({ isSignedIn, setIsSignedIn, setUserEmail, setUserDbId }) => {
+const Header = ({ isSignedIn, setIsSignedIn, setUserEmail, setUserDbId, setGameAndLeaderboard, showGame }) => {
     const [userName, setUserName] = useState(undefined);
 
     const onSignOut = () => {
         setIsSignedIn(false);
         setUserName(undefined);
         setUserEmail(undefined);
+        showGame && setGameAndLeaderboard()
     };
 
     return (

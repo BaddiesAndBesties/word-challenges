@@ -1,4 +1,4 @@
-const Leaderboard = (setGameAndLeaderboard) => {
+const Leaderboard = () => {
     
 
     const getTopScores = () => {

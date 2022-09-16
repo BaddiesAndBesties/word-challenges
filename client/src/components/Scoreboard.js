@@ -47,7 +47,7 @@ const Scoreboard = ({ isSignedIn, userDbId, setGameAndLeaderboard, showGame }) =
         {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={startNewGame} />}
 
 
-        <Button text={showGame ? 'Leaderboard' : 'Back to Game'} onClick={setGameAndLeaderboard} />
+        { (userDbId && isSignedIn) && <Button text={showGame ? 'Leaderboard' : 'Back to Game'} onClick={setGameAndLeaderboard} />}
 
         <Button text='Instructions' onClick={() => setShowInstructions(true)} />
         {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
