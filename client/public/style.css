@@ -65,6 +65,7 @@ main {
     width: 55vw;
     background-color: #138086;
 }
+
 .card {
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     padding: 2vh 2vw;
@@ -151,6 +152,10 @@ text-align: center;
             INSTRUCTIONS
 ----------------------------------- */
 
+.modal {
+    color: rgb(255, 255, 255);
+}
+
 #portal .container {
     position: fixed;
     top: 0;
@@ -162,6 +167,10 @@ text-align: center;
     align-items: center;
     justify-content: center;
     background: rgba(0, 0, 0, 0.300);
+}
+
+#instruction-container {
+    background-color: #051f21;
 }
 
 .container .modal {
