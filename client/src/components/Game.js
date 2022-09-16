@@ -40,16 +40,16 @@ const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoi
                 setUserWon(true);
             }
         });
-    }, [gameOver, userDbId]);
-
-    const makeGuess = (e) => {
-        if (document.querySelector('form').checkValidity()) {
-            e.preventDefault();
-            const letter = document.querySelector('input');
-            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
-            letter.value = '';
-        }
-    };
+    }, [gameOver]);
+        
+        const makeGuess = (e) => {
+            if (document.querySelector('form').checkValidity()) {
+                e.preventDefault();
+                const letter = document.querySelector('input');
+                socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
+                letter.value = '';
+            }
+        };
 
     return (
         <main className='game card'>

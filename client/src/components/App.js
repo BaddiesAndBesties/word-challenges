@@ -9,10 +9,10 @@ const App = () => {
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [userEmail, setUserEmail] = useState(undefined);
     const [userDbId, setUserDbId] = useState(undefined);
-    const [gameOver, setGameOver] = useState(false);
-    const [userWon, setUserWon] = useState(undefined);
-    const [gamePoint, setGamePoint] = useState(0);
-    const [showLeaderboard, setShowLeaderboard] = useState(true);
+    let [gameOver, setGameOver] = useState(false);
+    let [userWon, setUserWon] = useState(undefined);
+    let [gamePoint, setGamePoint] = useState(0);
+    let [showLeaderboard, setShowLeaderboard] = useState(true);
 
     if (gameOver) {
         fetch(`/user/${userDbId}/update-stat`, {
@@ -25,10 +25,6 @@ const App = () => {
                 point: gamePoint,
             })
         })
-            .then((res) => res.json())
-            .then(({ mongoId }) => {
-                setUserDbId(mongoId);
-            })
             .catch((error) => {
                 console.error(error);
             });

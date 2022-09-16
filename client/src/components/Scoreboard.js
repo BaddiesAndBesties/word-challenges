@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Instructions from './Instructions';
 import Button from './Button';
 
-const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, showLeaderboard, setShowLeaderboard }) => {
+const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, setShowLeaderboard }) => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
@@ -23,7 +23,7 @@ const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, showLeaderboa
           console.error(error);
         });
     }
-  }, [userDbId]);
+  }, [gameOver, userDbId]);
 
   const startNewGame = () => {
     setShowLeaderboard(false);
@@ -36,7 +36,7 @@ const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, showLeaderboa
       .catch((error) => {
           alert('Updating game result was disrupted. Please try again.');
           console.error(error);
-      })
+      });
   };
 
   return (
