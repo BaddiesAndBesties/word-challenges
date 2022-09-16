@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const jwtDecoder = require('./jwt');
 const { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores } = require('../database/mongoose');
+const { User } = require('../database/models');
 
 const port = process.env.PORT || 8080;
 const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
@@ -123,6 +124,46 @@ app.put('/user/:id/newGame', async (req, res) => {
     startNewGame(id, word)
 })
 
+app.put('/getIsPlaying', (req, res)=>{
+    const {userDbId} = req.body
+    console.log("userDbId",userDbId);
+
+    User.findOneAndUpdate({userDbId: userDbId}, {
+        $set: {
+            isPlaying: false 
+        }
+    }, {
+        sort:{}, 
+        upsert: false
+    }, (err, result) =>{
+        if (err){
+            console.log(err)
+            res.sendStatus(400)
+        } 
+        res.sendStatus(200)
+    }
+    )
+    // isPlaying(playing)
+    // .then((play)=>{
+    //     res.status(200)
+    //     res.render('App.js', {isPlaying: isPlaying})
+    // })
+    //send to App.js
+})
+
+// app.get('/user/:id/stats', (req, res) => {
+//     const { id } = req.params;
+//     getStats(id)
+//         .then((stats) => {
+//             res.status(200);
+//             res.send(JSON.stringify(stats));
+//         })
+//         .catch((error) => {
+//             res.sendStatus(500);
+//             console.error(error);
+//         });
+// });
+
 
 const server = app.listen(port, () => {
     console.log(`listening on ${port}`);
@@ -160,6 +201,7 @@ io.on('connection', (socket) => {
     })
     socket.on('userGuess', async ({ letter }) => {
         const currIndexs = [...secretWord.matchAll(new RegExp(letter, 'gi'))].map(a => a.index);
+        //secret word undefined?
         console.log(currIndexs)
         for (let i = 0; i < currIndexs.length; i++) {
             placeholderWord[currIndexs[i]] = letter
@@ -208,4 +250,5 @@ const getNewWord = () => {
             console.error(error);
         });
     })
+
 }
