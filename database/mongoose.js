@@ -61,6 +61,7 @@ const getTopScores = async () => {
 };
 
 const startNewGame = (id, word) => {
+    console.log({id, word})
     User.findOneAndUpdate({
         _id: new mongoose.Types.ObjectId(id)
     },

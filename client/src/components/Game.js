@@ -1,70 +1,20 @@
 import Button from './Button';
-import io from 'socket.io-client'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { SocketContext } from '../socketProvider';
+
 
 // const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
-const socket = io.connect('http://localhost:8080'); 
+// const socket = io.connect('http://localhost:8080')
 
-const Game = ({ userDbId, gameOver, setGameOver }) => {
-    const [incorrectGuesses, setIncorrectGuesses] = useState([]);
-    const [placeholder, setPlaceholder] = useState([]);
-    const [userWon, setUserWon] = useState(undefined);
-    const [remainingGuess, setRemainingGuess] = useState(7);
-
-    const updatePlayingStatus = () => {
-        // setIsPlaying(!isPlaying)
-        // setGameOver(false)
-        fetch(`/user/${userDbId}/playingStatus`, {
-          method: 'put',
-          headers: { 'Content-Type': 'application/json' },
-        })
-          .then((res) => {
-            return res.json();
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }
-
-    useEffect(() => {
-        socket.on('connect', () => {
-            console.log('Socket connected: ' + socket.id); 
-        });
-
-        socket.on('disconnect', () => {
-            console.log('Socket disconnected'); 
-        });
-
-        socket.emit('placeholder', ({ id: userDbId }));
-
-        socket.once('placeholder', ({ placeholder }) => {
-            setRemainingGuess(placeholder.length);
-            setPlaceholder(placeholder);
-        });
-
-        socket.on('guessResult', ({ placeholder, incorrect, remainingGuess }) => {
-            setPlaceholder(placeholder);
-            setIncorrectGuesses(incorrect.join(' ').toUpperCase());
-            setRemainingGuess(remainingGuess);
-            if (remainingGuess < 1) {
-                setGameOver(true);
-                setUserWon(false);
-                updatePlayingStatus()
-            }
-            console.log(placeholder);
-            if (placeholder.indexOf('_') < 0) {
-                setGameOver(true);
-                setUserWon(true);
-                updatePlayingStatus()
-            }
-        });
-    }, []);
+const Game = () => {
+    
+    const { socketConnection, remainingGuess, placeholder, incorrectGuesses, userWon, isPlaying } = useContext(SocketContext)
 
     const makeGuess = (e) => {
         if (document.querySelector('form').checkValidity()) {
             e.preventDefault();
             const letter = document.querySelector('input');
-            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
+            socketConnection.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
             letter.value = '';
         }
     };
@@ -73,7 +23,7 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
         <main className='game card'>
             <div>
                 {
-                    gameOver 
+                    !isPlaying 
                         ?  
                         userWon ? <h1>WIN</h1> : <h1>LOST</h1>
                         :

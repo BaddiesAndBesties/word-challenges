@@ -1,18 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext} from 'react';
 import Instructions from './Instructions';
 import Button from './Button';
-import io from 'socket.io-client'
+import { SocketContext } from '../socketProvider';
 
 
-const socket = io.connect('http://localhost:8080'); 
 
+const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
+  const {userDbId, setIsPlaying, isPlaying, socketConnection} = useContext(SocketContext)
 
-const Scoreboard = ({ isSignedIn, userDbId, setShowLeaderboard, showLeaderboard, gameOver, setGameOver }) => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
   const [losses, setLosses] = useState(undefined);
-  const [isPlaying, setIsPlaying] = useState(undefined)
 
   useEffect(() => {
     if (userDbId) {
@@ -33,24 +32,14 @@ const Scoreboard = ({ isSignedIn, userDbId, setShowLeaderboard, showLeaderboard,
   }, [userDbId]);
 
   const startNewGame = () => {
-    // setIsPlaying(!isPlaying)
-    setGameOver(false)
-    fetch(`/user/${userDbId}/newGame`, {
-      method: 'put',
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    socketConnection.emit('newGame', {id: userDbId})
+    setIsPlaying(true)
   }
 
   return (
     <section className='scoreboard card'>
       <div className='btnContainer'>
-        {(isSignedIn && (!isPlaying || gameOver)) && <Button text='New Game' onClick={startNewGame} />}
+        {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={ startNewGame } />}
 
 
         { (userDbId && isSignedIn) && <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} onClick={() => setShowLeaderboard(!showLeaderboard)} />}
