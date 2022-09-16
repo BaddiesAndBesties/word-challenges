@@ -8,31 +8,40 @@ const App = () => {
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [userEmail, setUserEmail] = useState(undefined);
     const [userDbId, setUserDbId] = useState(undefined);
-    const [showLeaderboard, setShowLeaderboard] = useState(false);
-    const [showGame, setShowGame] = useState(true);
+    const [showLeaderboard, setShowLeaderboard] = useState(true);
+    const [showGame, setShowGame] = useState(false);
+
+    const setHome = () => {
+        setShowLeaderboard(true)
+        setShowGame(false)
+    }
+
 
     const setGameAndLeaderboard = () => {
         setShowLeaderboard(!showLeaderboard)
         setShowGame(!showGame)
-      };
+    };
 
     return (
         <div>
-            <Header 
-                isSignedIn={isSignedIn} 
-                setIsSignedIn={setIsSignedIn} 
+            <Header
+                isSignedIn={isSignedIn}
+                setIsSignedIn={setIsSignedIn}
                 setUserEmail={setUserEmail}
                 setUserDbId={setUserDbId}
+                setGameAndLeaderboard={setGameAndLeaderboard}
+                showGame={showGame}
             />
             <div className='mainBody'>
-                <Scoreboard 
-                    isSignedIn={isSignedIn} 
-                    userDbId={userDbId} 
-                    setGameAndLeaderboard={setGameAndLeaderboard} 
-                    showGame={showGame} 
+                <Scoreboard
+                    isSignedIn={isSignedIn}
+                    userDbId={userDbId}
+                    setGameAndLeaderboard={setGameAndLeaderboard}
+                    showGame={showGame}
                 />
-                {!userDbId ? 
-                <Leaderboard setGameAndLeaderboard={setGameAndLeaderboard} /> : <Game userDbId={userDbId} />}
+
+                {/* {!userDbId && setHome()} */}
+                {showLeaderboard ? <Leaderboard setGameAndLeaderboard={setGameAndLeaderboard} /> : <Game userDbId={userDbId} />}
             </div>
         </div>
     );
