@@ -7,7 +7,6 @@ import { SocketContext } from '../socketProvider';
 
 const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
   const {userDbId, setIsPlaying, isPlaying, socketConnection} = useContext(SocketContext)
-
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
@@ -19,7 +18,7 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
         .then((res) => {
           return res.json();
         })
-        .then(({ point, wins, losses, isPlaying }) => {
+        .then(({ point, wins, losses }) => {
           setPoint(point);
           setWins(wins);
           setLosses(losses);
@@ -29,7 +28,9 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
           console.error(error);
         });
     }
+
   }, [userDbId, point, wins, losses]);
+
 
   const startNewGame = () => {
     socketConnection.emit('newGame', {id: userDbId})
@@ -44,11 +45,12 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
 
         { (userDbId && isSignedIn) && <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} onClick={() => setShowLeaderboard(!showLeaderboard)} />}
 
+
         <Button text='Instructions' onClick={() => setShowInstructions(true)} />
         {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
 
       </div>
-      {/* {
+      {
         isSignedIn
           ?
           <div id='stats'>
@@ -64,7 +66,7 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
           </div>
           :
           null
-      } */}
+      }
     </section>
   )
 }
