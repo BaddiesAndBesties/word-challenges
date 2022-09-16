@@ -5,10 +5,9 @@ import { useEffect, useState } from 'react';
 // const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
 const socket = io.connect('http://localhost:8080'); 
 
-const Game = ({ userDbId, gameOver, setGameOver }) => {
+const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoint }) => {
     const [incorrectGuesses, setIncorrectGuesses] = useState([]);
     const [placeholder, setPlaceholder] = useState([]);
-    const [userWon, setUserWon] = useState(undefined);
     const [remainingGuess, setRemainingGuess] = useState(7);
 
     const updatePlayingStatus = () => {
@@ -39,6 +38,7 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
 
         socket.once('placeholder', ({ placeholder }) => {
             setRemainingGuess(placeholder.length);
+            setGamePoint(placeholder.length);
             setPlaceholder(placeholder);
         });
 
@@ -51,23 +51,22 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
                 setUserWon(false);
                 updatePlayingStatus()
             }
-            console.log(placeholder);
             if (placeholder.indexOf('_') < 0) {
                 setGameOver(true);
                 setUserWon(true);
                 updatePlayingStatus()
             }
         });
-    }, []);
-
-    const makeGuess = (e) => {
-        if (document.querySelector('form').checkValidity()) {
-            e.preventDefault();
-            const letter = document.querySelector('input');
-            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
-            letter.value = '';
-        }
-    };
+    }, [gameOver]);
+        
+        const makeGuess = (e) => {
+            if (document.querySelector('form').checkValidity()) {
+                e.preventDefault();
+                const letter = document.querySelector('input');
+                socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
+                letter.value = '';
+            }
+        };
 
     return (
         <main className='game card'>
@@ -75,7 +74,7 @@ const Game = ({ userDbId, gameOver, setGameOver }) => {
                 {
                     gameOver 
                         ?  
-                        userWon ? <h1>WIN</h1> : <h1>LOST</h1>
+                        userWon ? <h1>YOU WON</h1> : <h1>YOU LOST</h1>
                         :
                         <div>
                             <div id='game-screen'>

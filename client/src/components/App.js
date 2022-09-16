@@ -9,8 +9,26 @@ const App = () => {
     const [isSignedIn, setIsSignedIn] = useState(false);
     const [userEmail, setUserEmail] = useState(undefined);
     const [userDbId, setUserDbId] = useState(undefined);
-    const [gameOver, setGameOver] = useState(false);
-    const [showLeaderboard, setShowLeaderboard] = useState(true);
+    let [gameOver, setGameOver] = useState(false);
+    let [userWon, setUserWon] = useState(undefined);
+    let [gamePoint, setGamePoint] = useState(0);
+    let [showLeaderboard, setShowLeaderboard] = useState(true);
+
+    if (gameOver) {
+        fetch(`/user/${userDbId}/update-stat`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                result: userWon,
+                point: gamePoint,
+            })
+        })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 
     return (
         <div>
@@ -36,7 +54,13 @@ const App = () => {
                         ?
                             showLeaderboard 
                             ? <Leaderboard /> 
-                            : <Game userDbId={userDbId} gameOver={gameOver} setGameOver={setGameOver} />
+                            : <Game 
+                                userDbId={userDbId} 
+                                gameOver={gameOver} 
+                                setGameOver={setGameOver}
+                                userWon={userWon} 
+                                setUserWon={setUserWon}
+                                setGamePoint={setGamePoint} />
                         :
                         <WeclomeMessage />
                 }

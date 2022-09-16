@@ -3,11 +3,8 @@ import Instructions from './Instructions';
 import Button from './Button';
 import io from 'socket.io-client'
 
-
-const socket = io.connect('http://localhost:8080'); 
-
-
-const Scoreboard = ({ isSignedIn, userDbId, setShowLeaderboard, showLeaderboard, gameOver, setGameOver }) => {
+const Scoreboard = ({ isSignedIn, userDbId, gameOver, setGameOver, setShowLeaderboard }) => {
+  const socket = io.connect('http://localhost:8080'); 
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
@@ -20,7 +17,7 @@ const Scoreboard = ({ isSignedIn, userDbId, setShowLeaderboard, showLeaderboard,
         .then((res) => {
           return res.json();
         })
-        .then(({ point, wins, losses, isPlaying }) => {
+        .then(({ point, wins, losses }) => {
           setPoint(point);
           setWins(wins);
           setLosses(losses);
@@ -30,7 +27,7 @@ const Scoreboard = ({ isSignedIn, userDbId, setShowLeaderboard, showLeaderboard,
           console.error(error);
         });
     }
-  }, [userDbId]);
+  }, [gameOver, userDbId]);
 
   const startNewGame = () => {
     // setIsPlaying(!isPlaying)
@@ -43,18 +40,19 @@ const Scoreboard = ({ isSignedIn, userDbId, setShowLeaderboard, showLeaderboard,
         return res.json();
       })
       .catch((error) => {
-        console.error(error);
+          alert('Updating game result was disrupted. Please try again.');
+          console.error(error);
       });
-  }
+  };
 
   return (
     <section className='scoreboard card'>
-      <div className='btnContainer'>
-        {(isSignedIn && (!isPlaying || gameOver)) && <Button text='New Game' onClick={startNewGame} />}
-
-
-        { (userDbId && isSignedIn) && <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} onClick={() => setShowLeaderboard(!showLeaderboard)} />}
-
+      <div className='btn-container'>
+        {
+          !isSignedIn ? null : gameOver
+              ? <Button text='Another Game' onClick={startNewGame} />
+              : <Button text='Start Game' onClick={startNewGame} />
+        }
         <Button text='Instructions' onClick={() => setShowInstructions(true)} />
         {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
 
