@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { SocketContext } from '../socketProvider';
 
-const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail, setUserDbId }) => {
+const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail}) => {
+    const {setUserDbId, socketConnection} = useContext(SocketContext)
     useEffect(() => {
         const signInHandler = (res) => {
             fetch('/gsi', {

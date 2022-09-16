@@ -8,14 +8,14 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const jwtDecoder = require('./jwt');
 const {
-    findUser, 
-    addUser, 
-    getStats, 
-    getCurrentGame, 
+    findUser,
+    addUser,
+    getStats,
+    getCurrentGame,
     getTopScores,
-    startNewGame, 
-    updatePlayingStatus,
-    updateUserStat } = require('../database/mongoose');
+    startNewGame,
+    updatePlayingStatus } = require('../database/mongoose');
+
 
 const port = process.env.PORT || 8080;
 const buildDir = path.join(__dirname, '..', 'client', 'build/');
@@ -119,7 +119,7 @@ app.post('/gsi', async (req, res) => {
             });
     }
 
-    if (userInfo) { // If the user email already exist in the database, send existing user info
+    if (userInfo) { // If the user email already exist in the database, send exising user info
         res.status(200);
         res.send(JSON.stringify({
             firstname: userInfo.given_name,
@@ -130,24 +130,12 @@ app.post('/gsi', async (req, res) => {
 });
 
 // PUT REQUEST FOR NEW GAME
-app.put('/user/:id/new-game', async (req, res) => {
-    const { id } = req.params;
-    const newWord = await getNewWord();
-    updatePlayingStatus(id);
-    startNewGame(id, newWord)
-        .then((data) => {
-            console.log(data);
-            res.sendStatus(201);
-        })
-        .catch((error) => {
-            console.log('Updating user playing status - FAILED');
-            console.error(error);
-            res.sendStatus(400);
-        })
-});
+// app.put('/user/:id/newGame', async (req, res) => {
+
+// });
 
 // PUT REQUEST FOR USER PLAYING STATUS
-app.put('/user/:id/update-playing', async (req, res) => {
+app.put('/user/:id/playingStatus', async (req, res) => {
     const { id } = req.params;
     updatePlayingStatus(id)
         .then(() => {
@@ -188,7 +176,7 @@ app.put('/user/:id/update-stat', async (req, res) => {
 // SOCKET.IO
 const io = new Server(server, {
     cors: {
-        // origin: "https://word-challenges.herokuapp.com", // Use this when deployed to Heroku
+        // origin: "https://word-challenges.herokuapp.com", // Use this when deployed to Herok
         origin: `http://localhost:3000`,
         methods: ["GET", "POST"],
     },
@@ -201,8 +189,12 @@ io.on('connection', (socket) => {
     let placeholder = [];
     let incorrectGuesses = [];
 
-    socket.on('placeholder', async({ id }) => {
+
+    socket.on('placeholder', async ({ id }) => {
+        console.log('before if', id)
+
         if (id) {
+            console.log('after if')
             secretWord = await getCurrentGame(id)
                 .then(({ game }) => {
                     console.log(game.word); // For testing purposes
@@ -212,6 +204,7 @@ io.on('connection', (socket) => {
                     console.log('Getting user game data - FAILED');
                     console.error(error);
                 });
+            placeholder = []
             for (let i = 0; i < secretWord.length; i++) {
                 placeholder.push('_');
             }
@@ -219,8 +212,15 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('newGame', async ({ id }) => {
+        console.log('something went wrong', {id})
+        const newWord = await getNewWord()
+        updatePlayingStatus(id)
+        startNewGame(id, newWord)
+    })
+
     socket.on('userGuess', ({ letter, remainingGuess }) => {
-        let prevIncorrectNum = incorrectGuesses.length;
+        let prevIncorrectNum = incorrectGuesses.length
         for (let i = 0; i < secretWord.length; i++) {
             if (incorrectGuesses.indexOf(letter) < 0 && secretWord.indexOf(letter) < 0) {
                 incorrectGuesses.push(letter);
@@ -240,7 +240,7 @@ io.on('disconnet', () => {
     console.log('socket disconnected');
 });
 
-// Get new word from an external API. (Returns a promise)
+// Get new word from an external API. (Returns a prmise)
 const getNewWord = () => {
     const randomWordUrl = 'https://random-word-api.herokuapp.com/word';
     return new Promise((resolve, reject) => {

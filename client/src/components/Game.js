@@ -1,62 +1,28 @@
 import Button from './Button';
-import io from 'socket.io-client'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { SocketContext } from '../socketProvider';
 
 // const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
-const socket = io.connect('http://localhost:8080'); 
+// const socket = io.connect('http://localhost:8080')
 
-const Game = ({ userDbId, gameOver, setGameOver, userWon, setUserWon, setGamePoint }) => {
-    const [incorrectGuesses, setIncorrectGuesses] = useState([]);
-    const [placeholder, setPlaceholder] = useState([]);
-    const [remainingGuess, setRemainingGuess] = useState(7);
-    const socket = io.connect('http://localhost:8080'); 
+const Game = () => {
     
+    const { socketConnection, remainingGuess, placeholder, incorrectGuesses, userWon, isPlaying } = useContext(SocketContext)
+
     const makeGuess = (e) => {
         if (document.querySelector('form').checkValidity()) {
             e.preventDefault();
             const letter = document.querySelector('input');
-            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
+            socketConnection.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
             letter.value = '';
         }
     };
-    
-    useEffect(() => {
-        socket.on('connect', () => {
-            console.log('Socket connected: ' + socket.id); 
-        });
-
-        socket.on('disconnect', () => {
-            console.log('Socket disconnected'); 
-        });
-
-        socket.emit('placeholder', ({ id: userDbId }));
-
-        socket.once('placeholder', ({ placeholder }) => {
-            setRemainingGuess(placeholder.length);
-            setGamePoint(placeholder.length);
-            setPlaceholder(placeholder);
-        });
-
-        socket.on('guessResult', ({ placeholder, incorrect, remainingGuess }) => {
-            setPlaceholder(placeholder);
-            setIncorrectGuesses(incorrect.join(' ').toUpperCase());
-            setRemainingGuess(remainingGuess);
-            if (remainingGuess < 1) {
-                setGameOver(true);
-                setUserWon(false);
-            }
-            if (placeholder.indexOf('_') < 0) {
-                setGameOver(true);
-                setUserWon(true);
-            }
-        });
-    }, [gameOver]);
 
     return (
         <main className='game card'>
             <div>
                 {
-                    gameOver 
+                    !isPlaying 
                         ?  
                         userWon ? <h1>YOU WON</h1> : <h1>YOU LOST</h1>
                         :
