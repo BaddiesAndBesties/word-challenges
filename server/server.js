@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const { Server } = require("socket.io");
 const cors = require("cors");
 const jwtDecoder = require('./jwt');
-const { findUser, addUser, getStats, getCurrentGame, startNewGame } = require('../database/mongoose');
+const { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores } = require('../database/mongoose');
 
 const port = process.env.PORT || 8080;
 const publicDir = path.join(__dirname, '..', 'client', 'public', '/');
@@ -45,13 +45,25 @@ app.get('/user/:id/currentGame', (req, res) => {
         .then((game) => {
             res.status(200);
             res.send(JSON.stringify(game));
-            console.log(game)
         })
         .catch((error) => {
             res.sendStatus(500);
             console.error(error);
         });
 });
+
+// GET REQUEST FOR TOP SCORES
+app.get('/getTopScores', async (req, res) => {
+    await getTopScores()
+        .then((scores) => {
+            res.status(200)
+            res.send(JSON.stringify(scores))
+        })
+        .catch((error) => {
+            res.sendStatus(500);
+            console.error(error);
+        });
+})
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(publicDir + 'index.html'));
@@ -149,10 +161,12 @@ io.on('connection', (socket) => {
 
 });
 
+
 io.on('disconnet', () => {
     console.log('socket disconnected');
 })
 
+// GET NEW WORD FROM API
 const getNewWord = () => {
     const randomWordUrl = 'https://random-word-api.herokuapp.com/word';
     return new Promise((resolve, reject) => {

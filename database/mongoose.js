@@ -30,7 +30,7 @@ const addUser = (givenName, lastname, email, picture, word) => {
         point: 0,
         wins: 0,
         losses: 0,
-        isPlaying: false,
+        isPlaying: true,
         game: {
             word: word,
             guess: [],
@@ -56,13 +56,11 @@ const getCurrentGame = (id) => (
 );
 
 const startNewGame = (id, word) => {
-    console.log(word, 'id: ' + id)
     User.findOneAndUpdate({
         _id: new mongoose.Types.ObjectId(id)
     },
     {
         $set: {
-            isPlaying: true,
             game: {
                 word: word,
                 guess: [],
@@ -79,5 +77,11 @@ const startNewGame = (id, word) => {
     )
 }
 
+const getTopScores = async () => {
+    let scores = await User.find()
+    scores.sort((score1, score2) => score1.point - score2.point)
+    return scores.length <= 5 ? scores : scores.slice(5)
+}
 
-module.exports = { findUser, addUser, getStats, getCurrentGame, startNewGame };
+module.exports = { findUser, addUser, getStats, getCurrentGame, startNewGame, getTopScores };
+

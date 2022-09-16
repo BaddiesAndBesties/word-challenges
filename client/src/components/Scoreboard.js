@@ -28,6 +28,7 @@ const Scoreboard = ({ isSignedIn, userDbId, setGameAndLeaderboard, showGame }) =
   }, [userDbId]);
 
   const startNewGame = () => {
+    setIsPlaying(!isPlaying)
     fetch(`/user/${userDbId}/newGame`, {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
