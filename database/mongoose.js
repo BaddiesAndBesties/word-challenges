@@ -80,10 +80,10 @@ const startNewGame = (id, word) => {
         .then((res) => res)
 );
 
-const updatePlayingStatus = (id) => ( // Change isPlaying to be opposite value (true or false) 
+const updatePlayingStatus = (id) => { // Change isPlaying to be opposite value (true or false) 
     User.findOneAndUpdate(
         {
-            _id: new ObjectId(id)
+            _id: id
         }, 
         [ 
             { "$set": 
@@ -96,7 +96,8 @@ const updatePlayingStatus = (id) => ( // Change isPlaying to be opposite value (
                 } 
             ])
                 .then((res) => res)
-);
+        };
+
 
 const updateUserStat = (id, win, lose, gamePoint) => (
     User.findOneAndUpdate(

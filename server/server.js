@@ -14,7 +14,8 @@ const {
     getCurrentGame,
     getTopScores,
     startNewGame,
-    updatePlayingStatus } = require('../database/mongoose');
+    updatePlayingStatus,
+    updateUserStat } = require('../database/mongoose');
 
 
 const port = process.env.PORT || 8080;
@@ -129,14 +130,35 @@ app.post('/gsi', async (req, res) => {
     }
 });
 
-// PUT REQUEST FOR NEW GAME
-// app.put('/user/:id/newGame', async (req, res) => {
-
-// });
+// PUT REQUEST FOR UPDATING LOSS AND WIN
+app.put('/user/:id/update-stat', async (req, res) => {
+    const { id } = req.params;
+    const { result, point } = req.body;
+    let win, lose;
+    if (result) {
+        win = 1;
+        lose = 0;
+    } else {
+        win = 0;
+        lose = 1;
+    }
+    updateUserStat(id, win, lose, point)
+        .then(({ _id }) => {
+            res.status(201);
+            res.send(JSON.stringify({
+                mongoId: _id.toString()
+            }));
+        })
+        .catch((error) => {
+            console.log('Updating user stats - FAILED');
+            console.error(error);
+            res.sendStatus(400);
+        });
+});
 
 // PUT REQUEST FOR USER PLAYING STATUS
 app.put('/user/:id/playingStatus', async (req, res) => {
-    const { id } = req.params;
+    const  id  = req.params;
     updatePlayingStatus(id)
         .then(() => {
             res.sendStatus(201);
@@ -191,10 +213,7 @@ io.on('connection', (socket) => {
 
 
     socket.on('placeholder', async ({ id }) => {
-        console.log('before if', id)
-
         if (id) {
-            console.log('after if')
             secretWord = await getCurrentGame(id)
                 .then(({ game }) => {
                     console.log(game.word); // For testing purposes
@@ -219,7 +238,7 @@ io.on('connection', (socket) => {
         startNewGame(id, newWord)
     })
 
-    socket.on('userGuess', ({ letter, remainingGuess }) => {
+    socket.on('userGuess', ({ letter, remainingGuess, id }) => {
         let prevIncorrectNum = incorrectGuesses.length
         for (let i = 0; i < secretWord.length; i++) {
             if (incorrectGuesses.indexOf(letter) < 0 && secretWord.indexOf(letter) < 0) {
@@ -232,7 +251,13 @@ io.on('connection', (socket) => {
         if (prevIncorrectNum < incorrectGuesses.length) {
             remainingGuess--;
         }
-        socket.emit('guessResult', { placeholder: placeholder, incorrect: incorrectGuesses, remainingGuess: remainingGuess });
+        socket.emit('guessResult', { 
+            placeholder: placeholder, 
+            incorrect: incorrectGuesses, 
+            remainingGuess: remainingGuess,
+            wordLength: secretWord.length,
+            id: id
+         });
     });
 });
 

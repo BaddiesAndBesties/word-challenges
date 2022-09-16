@@ -13,18 +13,23 @@ export const SocketProvider = ({ children }) => {
 
 
 
-    // const updatePlayingStatus = () => {
-    //     fetch(`/user/${userDbId}/playingStatus`, {
-    //         method: 'put',
-    //         headers: { 'Content-Type': 'application/json' },
-    //     })
-    //         .then((res) => {
-    //             return res.json();
-    //         })
-    //         .catch((error) => {
-    //             console.error(error);
-    //         });
-    // }
+    const updatePlayingStatus = (id, wordLength) => {
+        console.log('i started fetch', id)
+        fetch(`/user/${id}/update-stat`, {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                result: userWon,
+                point: wordLength
+            })
+        })
+            .then((res) => {
+                return res.json();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 
     useEffect(() => {
         if (!socketConnection) {
@@ -41,36 +46,48 @@ export const SocketProvider = ({ children }) => {
 
 
             socketConnection.on('placeholder', ({ placeholder }) => {
-                console.log('hellloo', placeholder)
                 setRemainingGuess(placeholder.length);
                 setPlaceholder(placeholder);
             });
 
-            socketConnection.on('guessResult', ({ placeholder, incorrect, remainingGuess }) => {
-                console.log('poop', placeholder)
+            socketConnection.on('guessResult', ({ placeholder, incorrect, remainingGuess, wordLength, id }) => {
                 setPlaceholder(placeholder);
                 setIncorrectGuesses(incorrect.join(' ').toUpperCase());
                 setRemainingGuess(remainingGuess);
                 if (remainingGuess < 1) {
                     setUserWon(false);
                     setIsPlaying(false)
+                    updatePlayingStatus(id, wordLength)
+                    setIncorrectGuesses([])
+                    setRemainingGuess(7)
+                    console.log('WOmW YOU LOSeee')
                 }
-                console.log(placeholder);
+                console.log("interestubggfgyhk", placeholder);
                 if (placeholder.indexOf('_') < 0) {
                     setUserWon(true);
                     setIsPlaying(false)
+                    updatePlayingStatus(id, wordLength)
+                    setIncorrectGuesses([])
+                    setRemainingGuess(7)
+                    console.log('WOW YOU WINNNNa')
                 }
             });
         }
+        // }
+
     }, [socketConnection])
 
     useEffect(() => {
-        console.log({socketConnection, userDbId, isPlaying})
         if (socketConnection && userDbId && isPlaying) {
-            console.log('inside if')
             socketConnection.emit('placeholder', ({ id: userDbId }));
         }
     }, [userDbId, isPlaying])
+
+
+    // useEffect(() => {
+
+    // }, [socketConnection, userDbId])
+
     return <SocketContext.Provider value={{ socketConnection, remainingGuess, placeholder, incorrectGuesses, userWon, userDbId, setUserDbId, isPlaying, setIsPlaying }} >{children}</SocketContext.Provider>
 
 }
