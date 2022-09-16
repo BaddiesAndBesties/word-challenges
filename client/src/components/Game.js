@@ -3,102 +3,88 @@ import io from 'socket.io-client'
 import { useEffect, useState } from 'react';
 
 // const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
-const socket = io.connect(':3000'); 
+const socket = io.connect('http://localhost:8080'); 
 
-const Game = ({ userDbId }) => {
-    const [wordLength, setWordLength] = useState(undefined);
-    const [incorrectGuesses, setIncorrectGuesses] = useState(undefined);
-    const [incorrectCounter, setIncorrectCounter] = useState(undefined);
-    const [currentWord, setCurrentWord] = useState(undefined)
+const Game = ({ userDbId, gameOver, setGameOver }) => {
+    const [incorrectGuesses, setIncorrectGuesses] = useState([]);
+    const [placeholder, setPlaceholder] = useState([]);
+    const [userWon, setUserWon] = useState(undefined);
+    const [remainingGuess, setRemainingGuess] = useState(7);
 
     useEffect(() => {
         socket.on('connect', () => {
-            console.log('Socket connected: ' + socket.id); // x8WIv7-mJelg7on_ALbx
+            console.log('Socket connected: ' + socket.id); 
         });
 
         socket.on('disconnect', () => {
-            console.log('Socket disconnected'); // undefined
+            console.log('Socket disconnected'); 
         });
 
-        socket.emit('wordLength', ({ id: userDbId }));
+        socket.emit('placeholder', ({ id: userDbId }));
 
-        socket.on('wordLength', ({ length }) => {
-            console.log('Word length is ' + length);
-            setWordLength(length);
-        })
-
-        socket.on('guessResult', ({ result, incorrect }) => {
-            console.log('Returned from server = ' + result);
-            console.log('Returned from server = ' + incorrect);
-            setIncorrectCounter(incorrect.length)
-            setIncorrectGuesses(incorrect.join(' ').toUpperCase())
-            setCurrentWord(result)
+        socket.once('placeholder', ({ placeholder }) => {
+            setRemainingGuess(placeholder.length);
+            setPlaceholder(placeholder);
         });
-    }, [userDbId]);
+
+        socket.on('guessResult', ({ placeholder, incorrect, remainingGuess }) => {
+            setPlaceholder(placeholder);
+            setIncorrectGuesses(incorrect.join(' ').toUpperCase());
+            setRemainingGuess(remainingGuess);
+            if (remainingGuess < 1) {
+                setGameOver(true);
+                setUserWon(false);
+            }
+            console.log(placeholder);
+            if (placeholder.indexOf('_') < 0) {
+                setGameOver(true);
+                setUserWon(true);
+            }
+        });
+    }, []);
 
     const makeGuess = (e) => {
         if (document.querySelector('form').checkValidity()) {
             e.preventDefault();
             const letter = document.querySelector('input');
-            socket.emit('userGuess', { letter: letter.value });
+            socket.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess });
             letter.value = '';
         }
     };
 
-    const displayWord = (wordLength, currentWord, incorrectCounter) => {
-        const wordDisplay = [];
-        if (currentWord && !currentWord.includes('1')) {
-            // need to change isPlaying to false
-            //fetch get
-            //sending the isPLaying var back
-            let resp = fetch('/getIsPlaying', {
-                method: 'put', 
-                headers:{
-                    'Content-Type': 'application/json'
-                }, 
-                body: JSON.stringify({
-                    'id': userDbId
-                })
-            })
-            .then(response =>{
-                console.log("userDbId is", userDbId);
-                if(response.ok) console.log("ok");
-                // return response.json()
-            })
-            
-            return <h1>YOU WIN</h1>
-        } else if (currentWord && incorrectCounter === 8) {
-            return <h1>YOU LOSE</h1>
-        } else if (currentWord) {
-            for (let i = 0; i < wordLength; i++) {
-                if (currentWord[i] === '1') {
-                    wordDisplay.push(<li><span className='hidden'>1</span></li>);
-                } else {
-                    wordDisplay.push(<li><span>{currentWord[i]}</span></li>)
-                }
-            }
-        } else {
-            for (let i = 0; i < wordLength; i++) {
-                wordDisplay.push(<li><span className='hidden'>1</span></li>);
-            }
-        }
-        return wordDisplay;
-    };
-    displayWord()
-
     return (
         <main className='game card'>
-            <h1>Guess the Word!</h1>
             <div>
-                <ul>{displayWord(wordLength, currentWord, incorrectCounter)}</ul>
-                <p>Attempted Letters: {incorrectGuesses} </p>
-                <p>Incorrect Guess Counter: {incorrectCounter} </p>
-            </div>
-            <div>
-                <form action='post'>
-                    <input type='text' placeholder='Enter a letter' pattern="[A-Za-z]{1}" required />
-                    <Button onClick={makeGuess} text='Submit' color='#dc8665' />
-                </form>
+                {
+                    gameOver 
+                        ?  
+                        userWon ? <h1>WIN</h1> : <h1>LOST</h1>
+                        :
+                        <div>
+                            <div id='game-screen'>
+                                <h1>Guess the Word!</h1>
+
+                                <ul>{
+                                        placeholder.map((letter, i) => {
+                                            if (letter === '_') {
+                                                return <li key={i}><span className='hidden'>_</span></li>;
+                                            } else {
+                                                return <li key={i}><span>{letter}</span></li>;
+                                            }
+                                        })
+                                    }
+                                </ul>
+                                <p>Attempted Letters: {incorrectGuesses} </p>
+                                <p>Remaining Guesses: {remainingGuess} </p>
+                            </div>
+                            <div>
+                                <form action='post'>
+                                    <input type='text' placeholder='Enter a letter' pattern="[A-Za-z]{1}" required />
+                                    <Button onClick={makeGuess} text='Submit' color='#dc8665' />
+                                </form>
+                            </div>
+                        </div>
+                }
             </div>
         </main>
     );

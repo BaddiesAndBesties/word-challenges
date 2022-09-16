@@ -34,7 +34,7 @@ img{
     display: flex;
     align-items: center;
 }
-#sign-out-btn{
+#sign-out-btn {
     margin-left: 5rem;
 }
 
@@ -42,27 +42,37 @@ img{
             MAIN
 ----------------------------------- */
 
-.mainBody {
+#main-screen {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     margin: 5vh 5vw;
+    margin-top: 7rem;
+}
+
+#welcome-message {
+    color: #534666;
+    text-align: center;
 }
 
 .scoreboard {
     width: 25vw;
     background-color: #dc8665;
+    height: fit-content;
+    width: fit-content;
 }
 
-main{
+main {
     width: 55vw;
     background-color: #138086;
 }
-.card{
+
+.card {
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     padding: 2vh 2vw;
     border-radius: 20px;
 }
-.btn{
+
+.btn {
 display: inline-block;
 outline: none;
 cursor: pointer;
@@ -74,7 +84,9 @@ color: #000;
 background: #dc8665;
 line-height: 1.15;
 font-size: 16px;
+text-align: center;
 }
+
 .btn:hover {
     transition: all .1s ease;
     box-shadow: 0 0 0 0 #fff, 0 0 0 3px #dc8665;
@@ -82,54 +94,56 @@ font-size: 16px;
 /* --------------------------------
             SCOREBOARD
 ----------------------------------- */
-.scoreboard .btn{
+.scoreboard .btn {
     background-color: #138086;
     width: fit-content;
     margin: 1vh 0;
 }
-.scoreboard .btnContainer {
+.scoreboard .btn-container {
     display: flex;
     flex-direction: column;
-    /* align-items: center; */
+    align-items: center;
 }
 
 /* --------------------------------
             LEADERBOARD
 ----------------------------------- */
-.leaderboard, .game{
+.leaderboard, .game {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
 }
-.leaderboard h1, .leaderboard ol{
+.leaderboard h1, .leaderboard ol {
     width: fit-content;
 }
-.leaderboard h1, .game h1{
+.leaderboard h1, .game h1 {
     margin-bottom: 0;
 }
 
 /* --------------------------------
             GAME
 ----------------------------------- */
-.hidden{
+.hidden {
     visibility: hidden; 
 }
 
-.game ul{
+.game ul {
     list-style-type: none;
     display: flex;
     justify-content: space-around;
     padding: 0;
     margin-bottom: 5vh;
 }
-.game li{
+
+.game li {
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     padding: 1vh 1vw;
     margin: 0 0.5vw;
     background-color: #dc8665;
 }
-.game form{
+
+.game form {
     display: flex;
     justify-content: space-between;
 }
@@ -137,6 +151,10 @@ font-size: 16px;
 /* --------------------------------
             INSTRUCTIONS
 ----------------------------------- */
+
+.modal {
+    color: rgb(255, 255, 255);
+}
 
 #portal .container {
     position: fixed;
@@ -149,8 +167,13 @@ font-size: 16px;
     align-items: center;
     justify-content: center;
     background: rgba(0, 0, 0, 0.300);
-  }
-  .container .modal {
+}
+
+#instruction-container {
+    background-color: #051f21;
+}
+
+.container .modal {
     z-index: 1;
     width: 40%;
     height: 40%;
@@ -161,8 +184,9 @@ font-size: 16px;
     border-radius: 5px;
     position: relative;
     animation: animate 0.5s;
-  }
-  .modal button {
+}
+
+.modal button {
     position: absolute;
     top: 7px;
     right: 7px;
@@ -174,12 +198,13 @@ font-size: 16px;
     outline: none;
     border-radius: 2px;
     cursor: pointer;
-  }
-  @keyframes animate {
+}
+
+@keyframes animate {
     from {
-      transform: scale(0.3);
+        transform: scale(0.3);
     }
     to {
-      transform: scale(1);
+        transform: scale(1);
     }
-  }
+}

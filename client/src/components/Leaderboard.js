@@ -3,27 +3,20 @@ import { useEffect, useState } from "react";
 const Leaderboard = () => {
     const [topPlayers, SetTopPlayers] = useState([]);
     
-    const getTopScores = async () => {
-        const topScores = await fetch('/getTopScores')
-            .then((res) => res.json())
-            .then(data => data)
-            .catch((error) => {
-                console.error(error)
-            });
-        return topScores;
-    };
-
     useEffect(() => {
-        const players = [];
-        getTopScores()   
-            .then((topScores) => {
-                console.log(topScores);
-                for (let i = 0; i < topScores.length; i++) {
-                    players.push(<li>{topScores[i].given_name}: {topScores[i].point} points</li>);
+        fetch('leaderboard/top-five')
+            .then((res) => res.json())
+            .then((users) => {
+                const userArr = [];
+                for (let i = 0; i < users.length; i++) {
+                    userArr.push(<li key={i}>{users[i].given_name}: {users[i].point} points</li>);
                 }
+                SetTopPlayers(userArr);
+            })
+            .catch((error) => {
+                console.error(error);
             });
-        SetTopPlayers(players);
-    }, [])
+    }, []);
 
     return (
         <main className='leaderboard card'>

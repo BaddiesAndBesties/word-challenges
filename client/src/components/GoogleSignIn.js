@@ -12,20 +12,19 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUse
                     jwtToken: res.credential
                 })
             })
-                .then((res) => {
-                    return res.json();
-                })
+                .then((res) => res.json())
                 .then(({ firstname, email, id }) => {
                     setUserName(firstname);
                     setUserEmail(email);
                     setUserDbId(id);
                 })
                 .catch((error) => {
+                    alert('Sorry, please double check user information in your Google account.');
                     console.error(error);
                 });
             setIsSignedIn(true);
         };
-
+    
         const initGsi = async () => {
             try {
                 if (!window.google) {
@@ -52,15 +51,13 @@ const GoogleSignIn = ({ isSignedIn, setIsSignedIn, userName, setUserName, setUse
             }
         };
 
-        // Script that gets attached to the body (i.e., <script>)
         const script = document.createElement('script');
         script.id = 'google-client-script';
         script.src = "https://accounts.google.com/gsi/client";
         script.async = true;
         script.onload = initGsi;
         document.querySelector('body').appendChild(script);
-
-    }, [isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail]);
+    }, [isSignedIn, setIsSignedIn, userName, setUserName, setUserEmail, setUserDbId]);
 
     return (
         <div id="gsi-container"></div>
