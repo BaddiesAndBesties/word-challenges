@@ -60,8 +60,7 @@ const getTopScores = async () => {
     return scores.length <= 5 ? scores : scores.slice(5);
 };
 
-const startNewGame = (id, word) => {
-    console.log({id, word})
+const startNewGame = (id, word) => (
     User.findOneAndUpdate({
         _id: new mongoose.Types.ObjectId(id)
     },

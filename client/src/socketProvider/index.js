@@ -1,20 +1,29 @@
-import React, { useContext, useEffect, useState } from "react";
-import { io } from "socket.io-client"
+import React, { useEffect, useState } from 'react';
+import { io } from 'socket.io-client';
 
 export const SocketContext = React.createContext({})
 export const SocketProvider = ({ children }) => {
-    const [socketConnection, setSocketConnection] = useState(null)
+    const [socketConnection, setSocketConnection] = useState(null);
     const [incorrectGuesses, setIncorrectGuesses] = useState([]);
     const [placeholder, setPlaceholder] = useState([]);
     const [userWon, setUserWon] = useState(undefined);
     const [remainingGuess, setRemainingGuess] = useState(7);
     const [userDbId, setUserDbId] = useState(undefined);
-    const [isPlaying, setIsPlaying] = useState(undefined)
-
-
+    const [isPlaying, setIsPlaying] = useState(undefined);
 
     const updatePlayingStatus = (id, wordLength) => {
-        console.log('i started fetch', id)
+        fetch(`/user/${id}/playing-status`, {
+            method: 'put'
+        })
+            .then((res) => {
+                return res.json();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    const updateUserStats = (id, userWon, wordLength) => {
         fetch(`/user/${id}/update-stat`, {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
@@ -29,11 +38,11 @@ export const SocketProvider = ({ children }) => {
             .catch((error) => {
                 console.error(error);
             });
-    }
+    };
 
     useEffect(() => {
         if (!socketConnection) {
-            setSocketConnection(io())
+            setSocketConnection(io());
         }
         if (socketConnection) {
             socketConnection.on('connect', () => {
@@ -56,39 +65,41 @@ export const SocketProvider = ({ children }) => {
                 setRemainingGuess(remainingGuess);
                 if (remainingGuess < 1) {
                     setUserWon(false);
-                    setIsPlaying(false)
-                    updatePlayingStatus(id, wordLength)
-                    setIncorrectGuesses([])
-                    setRemainingGuess(7)
-                    console.log('WOmW YOU LOSeee')
+                    setIsPlaying(false);
+                    updatePlayingStatus(id);
+                    updateUserStats(id, wordLength);
+                    setIncorrectGuesses([]);
+                    setRemainingGuess(7);
                 }
+
                 console.log("interestubggfgyhk", placeholder);
                 if (placeholder.indexOf('_') < 0) {
                     setUserWon(true);
-                    setIsPlaying(false)
-                    updatePlayingStatus(id, wordLength)
-                    setIncorrectGuesses([])
-                    setRemainingGuess(7)
-                    console.log('WOW YOU WINNNNa')
+                    setIsPlaying(false);
+                    updatePlayingStatus(id);
+                    updateUserStats(id, wordLength);
+                    setIncorrectGuesses([]);
+                    setRemainingGuess(7);
                 }
             });
         }
-        // }
 
-    }, [socketConnection])
+    }, [socketConnection]);
 
     useEffect(() => {
         if (socketConnection && userDbId && isPlaying) {
             socketConnection.emit('placeholder', ({ id: userDbId }));
         }
-    }, [userDbId, isPlaying])
+    }, [userDbId, isPlaying, socketConnection]);
 
-
-    // useEffect(() => {
-
-    // }, [socketConnection, userDbId])
-
-    return <SocketContext.Provider value={{ socketConnection, remainingGuess, placeholder, incorrectGuesses, userWon, userDbId, setUserDbId, isPlaying, setIsPlaying }} >{children}</SocketContext.Provider>
-
-}
-
+    return <SocketContext.Provider value={{ 
+        socketConnection, 
+        remainingGuess, 
+        placeholder, 
+        incorrectGuesses, 
+        userWon, 
+        userDbId, 
+        setUserDbId, 
+        isPlaying, 
+        setIsPlaying }} >{children}</SocketContext.Provider>
+};

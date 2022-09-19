@@ -1,14 +1,9 @@
 import Button from './Button';
-import { useEffect, useState, useContext } from 'react';
+import { useContext } from 'react';
 import { SocketContext } from '../socketProvider';
 
-// const socket = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
-// const socket = io.connect('http://localhost:8080')
-
 const Game = () => {
-    
-    const { socketConnection, remainingGuess, placeholder, incorrectGuesses, userWon, isPlaying, userDbId } = useContext(SocketContext)
-
+    const { socketConnection, remainingGuess, placeholder, incorrectGuesses, userWon, isPlaying, userDbId } = useContext(SocketContext);
     const makeGuess = (e) => {
         if (document.querySelector('form').checkValidity()) {
             e.preventDefault();
@@ -29,7 +24,6 @@ const Game = () => {
                         <div>
                             <div id='game-screen'>
                                 <h1>Guess the Word!</h1>
-
                                 <ul>{
                                         placeholder.map((letter, i) => {
                                             if (letter === '_') {

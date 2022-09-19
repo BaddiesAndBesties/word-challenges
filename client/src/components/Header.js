@@ -1,17 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import GoogleSignIn from "./GoogleSignIn";
 import Button from "./Button";
-import { SocketContext } from "../socketProvider";
 
 
-const Header = ({ isSignedIn, setIsSignedIn, setUserEmail, setShowLeaderboard, showLeaderboard }) => {
-    const {userDbId, setUserDbId} = useContext(SocketContext)
+const Header = ({ isSignedIn, setIsSignedIn, setShowLeaderboard, showLeaderboard }) => {
     const [userName, setUserName] = useState(undefined);
 
     const onSignOut = () => {
         setIsSignedIn(false);
         setUserName(undefined);
-        setUserEmail(undefined);
         !showLeaderboard && setShowLeaderboard(true)
     };
 
@@ -32,7 +29,6 @@ const Header = ({ isSignedIn, setIsSignedIn, setUserEmail, setShowLeaderboard, s
                             setIsSignedIn={setIsSignedIn}
                             userName={userName}
                             setUserName={setUserName}
-                            setUserEmail={setUserEmail}
                         />
                 }
             </div>

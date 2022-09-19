@@ -53,7 +53,7 @@ app.get('/user/:id/stats', (req, res) => {
 });
 
 // GET REQUEST FOR CURRENT GAME (word and current guesses)
-app.get('/user/:id/currentGame', (req, res) => {
+app.get('/user/:id/current-game', (req, res) => {
     const { id } = req.params;
     getCurrentGame(id)
         .then((game) => {
@@ -143,47 +143,8 @@ app.put('/user/:id/update-stat', async (req, res) => {
         lose = 1;
     }
     updateUserStat(id, win, lose, point)
-        // .then((data) => {
-        //     console.log(data)
-        //     res.status(201);
-        //     res.send(JSON.stringify({
-        //         mongoId: _id.toString()
-        //     }));
-        // })
-        // .catch((error) => {
-        //     console.log('Updating user stats - FAILED');
-        //     console.error(error);
-        //     res.sendStatus(400);
-        // });
-});
-
-// PUT REQUEST FOR USER PLAYING STATUS
-app.put('/user/:id/playingStatus', async (req, res) => {
-    const  id  = req.params;
-    updatePlayingStatus(id)
-        .then(() => {
-            res.sendStatus(201);
-        })
-        .catch((error) => {
-            console.log('Updating user playing status - FAILED');
-            console.error(error);
-            res.sendStatus(400);
-        });
-});
-
-app.put('/user/:id/update-stat', async (req, res) => {
-    const { id } = req.params;
-    const { result, point } = req.body;
-    let win, lose;
-    if (result) {
-        win = 1;
-        lose = 0;
-    } else {
-        win = 0;
-        lose = 1;
-    }
-    updateUserStat(id, win, lose, point)
-        .then(({ _id }) => {
+        .then((data) => {
+            console.log(data)
             res.status(201);
             res.send(JSON.stringify({
                 mongoId: _id.toString()
@@ -196,22 +157,34 @@ app.put('/user/:id/update-stat', async (req, res) => {
         });
 });
 
+// PUT REQUEST FOR USER PLAYING STATUS
+app.put('/user/:id/playing-status', async (req, res) => {
+    const { id } = req.params;
+    const { result, point } = req.body
+    updatePlayingStatus(id)
+        .then(() => {
+            res.sendStatus(201);
+        })
+        .catch((error) => {
+            console.log('Updating user playing status - FAILED');
+            console.error(error);
+            res.sendStatus(400);
+        });
+});
+
 // SOCKET.IO
 const io = new Server(server, {
     cors: {
-        // origin: "https://word-challenges.herokuapp.com", // Use this when deployed to Herok
+        // origin: "https://word-challenges.herokuapp.com", // Use this when deploying to Heroku
         origin: `http://localhost:3000`,
         methods: ["GET", "POST"],
     },
 });
 
 io.on('connection', (socket) => {
-    console.log(`user connected: ${socket.id}`);
-
     let secretWord;
     let placeholder = [];
     let incorrectGuesses = [];
-
 
     socket.on('placeholder', async ({ id }) => {
         if (id) {
@@ -233,10 +206,9 @@ io.on('connection', (socket) => {
     });
 
     socket.on('newGame', async ({ id }) => {
-        console.log('something went wrong', {id})
-        const newWord = await getNewWord()
-        updatePlayingStatus(id)
-        startNewGame(id, newWord)
+        const newWord = await getNewWord();
+        updatePlayingStatus(id);
+        startNewGame(id, newWord);
     })
 
     socket.on('userGuess', ({ letter, remainingGuess, id }) => {

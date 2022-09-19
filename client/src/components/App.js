@@ -10,7 +10,6 @@ import { SocketProvider } from '../socketProvider';
 const App = () => {
 
     const [isSignedIn, setIsSignedIn] = useState(false);
-    const [userEmail, setUserEmail] = useState(undefined);
     const [showLeaderboard, setShowLeaderboard] = useState(true);
 
     return (
@@ -18,7 +17,6 @@ const App = () => {
             <Header
                 isSignedIn={isSignedIn}
                 setIsSignedIn={setIsSignedIn}
-                setUserEmail={setUserEmail}
                 setShowLeaderboard={setShowLeaderboard}
                 showLeaderboard={showLeaderboard}
             />
@@ -27,7 +25,6 @@ const App = () => {
                     isSignedIn={isSignedIn}
                     showLeaderboard={showLeaderboard}
                     setShowLeaderboard={setShowLeaderboard}
-                    setSocket={setSocket}
                 />
                 {
                     isSignedIn
