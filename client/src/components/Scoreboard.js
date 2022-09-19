@@ -3,10 +3,8 @@ import Instructions from './Instructions';
 import Button from './Button';
 import { SocketContext } from '../socketProvider';
 
-
-
 const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
-  const {userDbId, setIsPlaying, isPlaying, socketConnection} = useContext(SocketContext);
+  const { socketConnection, userDbId, isPlaying, setIsPlaying } = useContext(SocketContext);
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
@@ -15,9 +13,7 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
   useEffect(() => {
     if (userDbId) {
       fetch(`/user/${userDbId}/stats`)
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then(({ point, wins, losses }) => {
           setPoint(point);
           setWins(wins);
@@ -28,9 +24,7 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
           console.error(error);
         });
     }
-
-  }, [userDbId, point, wins, losses]);
-
+  }, [userDbId]);
 
   const startNewGame = () => {
     socketConnection.emit('newGame', {id: userDbId});

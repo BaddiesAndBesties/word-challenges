@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import GoogleSignIn from "./GoogleSignIn";
 import Button from "./Button";
 
-
-const Header = ({ isSignedIn, setIsSignedIn, setShowLeaderboard, showLeaderboard }) => {
+const Header = ({ isSignedIn, setIsSignedIn, setUserEmail, setShowLeaderboard, showLeaderboard }) => {
     const [userName, setUserName] = useState(undefined);
 
     const onSignOut = () => {
         setIsSignedIn(false);
         setUserName(undefined);
-        !showLeaderboard && setShowLeaderboard(true)
+        setUserEmail(undefined);
+        setShowLeaderboard(true);
     };
 
     return (
@@ -29,6 +29,7 @@ const Header = ({ isSignedIn, setIsSignedIn, setShowLeaderboard, showLeaderboard
                             setIsSignedIn={setIsSignedIn}
                             userName={userName}
                             setUserName={setUserName}
+                            setUserEmail={setUserEmail}
                         />
                 }
             </div>

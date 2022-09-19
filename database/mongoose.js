@@ -61,57 +61,49 @@ const getTopScores = async () => {
 };
 
 const startNewGame = (id, word) => (
-    User.findOneAndUpdate({
-        _id: new mongoose.Types.ObjectId(id)
-    },
-    {
-        $set: {
-            game: {
-                word: word,
-                guess: [],
-            },
-        }
-    }, 
-    {
-        sort: {}, 
-        upsert: false,
-    })
-        .then((res) => res)
-);
-
-const updatePlayingStatus = (id) => { // Change isPlaying to be opposite value (true or false) 
-    User.findOneAndUpdate(
-        {
-            _id: id
-        }, 
-        [ 
-            { "$set": 
-                {
-                    "isPlaying": 
-                        {
-                            "$eq": [false, "$isPlaying"] // Returns true or false
-                        } 
-                    } 
-                } 
-            ])
-                .then((res) => res)
-        };
-
-
-const updateUserStat = (id, win, lose, gamePoint) => (
     User.findOneAndUpdate(
         {
             _id: new ObjectId(id)
         },
         {
+            $set: {
+                isPlaying: true,
+                game: {
+                    word: word,
+                    guess: [],
+                },
+            }
+        }, 
+        {
+            new: true
+        }
+    )
+        .then((res) => res)
+);
+
+const updateGameResult = (id, win, lose, gamePoint) => (
+    User.findOneAndUpdate(
+        {
+            _id: new ObjectId(id)
+        },
+        {
+            $set: {
+                isPlaying: false,
+            },
             $inc: {
                 point: gamePoint,
                 wins: win,
                 losses: lose,
             }
+        },
+        {
+            new: true
         }
     )
         .then((res) => res)
+        .catch((error) => {
+            console.log(error);
+        })
 );
 
 module.exports = { 
@@ -121,5 +113,4 @@ module.exports = {
     getCurrentGame, 
     getTopScores, 
     startNewGame, 
-    updatePlayingStatus, 
-    updateUserStat };
+    updateGameResult };

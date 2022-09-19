@@ -14,8 +14,7 @@ const {
     getCurrentGame,
     getTopScores,
     startNewGame,
-    updatePlayingStatus,
-    updateUserStat } = require('../database/mongoose');
+    updateGameResult } = require('../database/mongoose');
 
 
 const port = process.env.PORT || 8080;
@@ -43,6 +42,7 @@ app.get('/user/:id/stats', (req, res) => {
     getStats(id)
         .then((stats) => {
             res.status(200);
+            console.log(stats);
             res.send(JSON.stringify(stats));
         })
         .catch((error) => {
@@ -101,7 +101,7 @@ app.post('/gsi', async (req, res) => {
         });
 
     if (!userInfo) { // If the user email does NOT exist in the database, add it to the database
-        const word = await getNewWord()
+        const word = await getNewWord();
 
         addUser(given_name, family_name, email, picture, word)
             .then((mongoId) => {
@@ -128,48 +128,6 @@ app.post('/gsi', async (req, res) => {
             id: userInfo._id.toString(),
         }));
     }
-});
-
-// PUT REQUEST FOR UPDATING LOSS AND WIN
-app.put('/user/:id/update-stat', async (req, res) => {
-    const { id } = req.params;
-    const { result, point } = req.body;
-    let win, lose;
-    if (result) {
-        win = 1;
-        lose = 0;
-    } else {
-        win = 0;
-        lose = 1;
-    }
-    updateUserStat(id, win, lose, point)
-        .then((data) => {
-            console.log(data)
-            res.status(201);
-            res.send(JSON.stringify({
-                mongoId: _id.toString()
-            }));
-        })
-        .catch((error) => {
-            console.log('Updating user stats - FAILED');
-            console.error(error);
-            res.sendStatus(400);
-        });
-});
-
-// PUT REQUEST FOR USER PLAYING STATUS
-app.put('/user/:id/playing-status', async (req, res) => {
-    const { id } = req.params;
-    const { result, point } = req.body
-    updatePlayingStatus(id)
-        .then(() => {
-            res.sendStatus(201);
-        })
-        .catch((error) => {
-            console.log('Updating user playing status - FAILED');
-            console.error(error);
-            res.sendStatus(400);
-        });
 });
 
 // SOCKET.IO
@@ -207,12 +165,11 @@ io.on('connection', (socket) => {
 
     socket.on('newGame', async ({ id }) => {
         const newWord = await getNewWord();
-        updatePlayingStatus(id);
         startNewGame(id, newWord);
     })
 
     socket.on('userGuess', ({ letter, remainingGuess, id }) => {
-        let prevIncorrectNum = incorrectGuesses.length
+        let prevIncorrectNum = incorrectGuesses.length;
         for (let i = 0; i < secretWord.length; i++) {
             if (incorrectGuesses.indexOf(letter) < 0 && secretWord.indexOf(letter) < 0) {
                 incorrectGuesses.push(letter);
@@ -224,13 +181,28 @@ io.on('connection', (socket) => {
         if (prevIncorrectNum < incorrectGuesses.length) {
             remainingGuess--;
         }
-        socket.emit('guessResult', { 
-            placeholder: placeholder, 
-            incorrect: incorrectGuesses, 
-            remainingGuess: remainingGuess,
-            wordLength: secretWord.length,
-            id: id
-         });
+        if (remainingGuess < 1) {
+            const point = (0 - secretWord.length);
+            updateGameResult(id, 0, 1, point)
+            .catch((error) => {
+                console.log('Updating user stats - FAILED');
+            });
+            socket.emit('gameOver', { userWon: false });
+        } else if (placeholder.indexOf('_') < 0) { // If placeholder does not contain any '_', user guess every letter
+            updateGameResult(id, 1, 0, secretWord.length)
+            .catch((error) => {
+                console.log('Updating user stats - FAILED');
+            });
+            socket.emit('gameOver', { userWon: true });
+        } else {
+            socket.emit('guessResult', { 
+                placeholder: placeholder, 
+                incorrect: incorrectGuesses, 
+                remainingGuess: remainingGuess,
+                wordLength: secretWord.length,
+                id: id
+            });
+        }
     });
 });
 

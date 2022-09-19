@@ -24,6 +24,7 @@ const Game = () => {
                         <div>
                             <div id='game-screen'>
                                 <h1>Guess the Word!</h1>
+
                                 <ul>{
                                         placeholder.map((letter, i) => {
                                             if (letter === '_') {

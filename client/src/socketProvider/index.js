@@ -1,49 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
+// const connection = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
+const connection = io.connect('http://localhost:8080');
+
 export const SocketContext = React.createContext({})
 export const SocketProvider = ({ children }) => {
     const [socketConnection, setSocketConnection] = useState(null);
-    const [incorrectGuesses, setIncorrectGuesses] = useState([]);
-    const [placeholder, setPlaceholder] = useState([]);
-    const [userWon, setUserWon] = useState(undefined);
-    const [remainingGuess, setRemainingGuess] = useState(7);
     const [userDbId, setUserDbId] = useState(undefined);
+    const [placeholder, setPlaceholder] = useState([]);
+    const [incorrectGuesses, setIncorrectGuesses] = useState([]);
+    const [remainingGuess, setRemainingGuess] = useState(7);
     const [isPlaying, setIsPlaying] = useState(undefined);
-
-    const updatePlayingStatus = (id, wordLength) => {
-        fetch(`/user/${id}/playing-status`, {
-            method: 'put'
-        })
-            .then((res) => {
-                return res.json();
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
-
-    const updateUserStats = (id, userWon, wordLength) => {
-        fetch(`/user/${id}/update-stat`, {
-            method: 'put',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                result: userWon,
-                point: wordLength
-            })
-        })
-            .then((res) => {
-                return res.json();
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
+    const [userWon, setUserWon] = useState(undefined);
 
     useEffect(() => {
         if (!socketConnection) {
-            setSocketConnection(io());
+            setSocketConnection(connection);
         }
+
         if (socketConnection) {
             socketConnection.on('connect', () => {
                 console.log('Socket connected: ' + socketConnection.id);
@@ -53,38 +28,23 @@ export const SocketProvider = ({ children }) => {
                 console.log('Socket disconnected');
             });
 
-
             socketConnection.on('placeholder', ({ placeholder }) => {
                 setRemainingGuess(placeholder.length);
                 setPlaceholder(placeholder);
+            });
+
+            socketConnection.on('gameOver', ({ userWon }) => {
+                setIsPlaying(false);
+                setUserWon(userWon);
             });
 
             socketConnection.on('guessResult', ({ placeholder, incorrect, remainingGuess, wordLength, id }) => {
                 setPlaceholder(placeholder);
                 setIncorrectGuesses(incorrect.join(' ').toUpperCase());
                 setRemainingGuess(remainingGuess);
-                if (remainingGuess < 1) {
-                    setUserWon(false);
-                    setIsPlaying(false);
-                    updatePlayingStatus(id);
-                    updateUserStats(id, wordLength);
-                    setIncorrectGuesses([]);
-                    setRemainingGuess(7);
-                }
-
-                console.log("interestubggfgyhk", placeholder);
-                if (placeholder.indexOf('_') < 0) {
-                    setUserWon(true);
-                    setIsPlaying(false);
-                    updatePlayingStatus(id);
-                    updateUserStats(id, wordLength);
-                    setIncorrectGuesses([]);
-                    setRemainingGuess(7);
-                }
             });
         }
-
-    }, [socketConnection]);
+    }, [isPlaying]);
 
     useEffect(() => {
         if (socketConnection && userDbId && isPlaying) {

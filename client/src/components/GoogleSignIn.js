@@ -2,7 +2,8 @@ import { useContext, useEffect } from 'react';
 import { SocketContext } from '../socketProvider';
 
 const GoogleSignIn = ({ setIsSignedIn, setUserName }) => {
-    const {setUserDbId } = useContext(SocketContext)
+    const { setUserDbId } = useContext(SocketContext);
+
     useEffect(() => {
         const signInHandler = (res) => {
             fetch('/gsi', {
@@ -25,7 +26,7 @@ const GoogleSignIn = ({ setIsSignedIn, setUserName }) => {
                 });
             setIsSignedIn(true);
         };
-    
+
         const initGsi = async () => {
             try {
                 if (!window.google) {
