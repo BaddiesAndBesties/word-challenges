@@ -15,8 +15,6 @@ const {
     getTopScores,
     startNewGame,
     updateGameResult } = require('../database/mongoose');
-
-
 const port = process.env.PORT || 8080;
 const buildDir = path.join(__dirname, '..', 'client', 'build/');
 const app = express();
@@ -42,7 +40,6 @@ app.get('/user/:id/stats', (req, res) => {
     getStats(id)
         .then((stats) => {
             res.status(200);
-            console.log(stats);
             res.send(JSON.stringify(stats));
         })
         .catch((error) => {
@@ -101,14 +98,11 @@ app.post('/gsi', async (req, res) => {
         });
 
     if (!userInfo) { // If the user email does NOT exist in the database, add it to the database
-        const word = await getNewWord();
-
-        addUser(given_name, family_name, email, picture, word)
+        addUser(given_name, family_name, email, picture)
             .then((mongoId) => {
                 res.status(201);
                 res.send(JSON.stringify({
                     firstname: given_name,
-                    email: email,
                     id: mongoId,
                 }));
             })
@@ -124,7 +118,6 @@ app.post('/gsi', async (req, res) => {
         res.status(200);
         res.send(JSON.stringify({
             firstname: userInfo.given_name,
-            email: userInfo.email,
             id: userInfo._id.toString(),
         }));
     }
@@ -140,35 +133,42 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-    let secretWord;
-    let placeholder = [];
-    let incorrectGuesses = [];
+    let secretWord, placeholder, incorrectGuesses;
 
-    socket.on('placeholder', async ({ id }) => {
+// Return if user data in db already has a word, return that word
+// Otherwise, return a new word
+    socket.on('newGame', async ({ id }) => { 
         if (id) {
+            placeholder = [];
+            incorrectGuesses = [];
             secretWord = await getCurrentGame(id)
-                .then(({ game }) => {
-                    console.log(game.word); // For testing purposes
-                    return game.word.split('');
+                .then( async ({ game }) => {
+                    if (game.word) {
+                        return game.word.split('');
+                    } else {
+                        const newWord = await getNewWord();
+                        startNewGame(id, newWord);
+                        return newWord;
+                    }
                 })
                 .catch((error) => {
                     console.log('Getting user game data - FAILED');
                     console.error(error);
                 });
-            placeholder = []
-            for (let i = 0; i < secretWord.length; i++) {
-                placeholder.push('_');
-            }
-            socket.emit('placeholder', { placeholder: placeholder });
+                for (let i = 0; i < secretWord.length; i++) {
+                    placeholder.push('_');
+                }
+                socket.emit('newGame', { placeholder: placeholder });
+        } else {
+            console.log('Error - User DB ID was not provided');
         }
     });
 
-    socket.on('newGame', async ({ id }) => {
-        const newWord = await getNewWord();
-        startNewGame(id, newWord);
-    })
-
-    socket.on('userGuess', ({ letter, remainingGuess, id }) => {
+// Examine user guess and return data to be displayed accordingly
+// (e.g., number of incorrect guesses, remaining guesses, etc.)
+// If the game is over, return the game result, get a new random word, and update DB user data
+// (e.g., new word, user's number of wins/losses, etc.)
+    socket.on('userGuess', async ({ letter, remainingGuess, id }) => {
         let prevIncorrectNum = incorrectGuesses.length;
         for (let i = 0; i < secretWord.length; i++) {
             if (incorrectGuesses.indexOf(letter) < 0 && secretWord.indexOf(letter) < 0) {
@@ -181,20 +181,27 @@ io.on('connection', (socket) => {
         if (prevIncorrectNum < incorrectGuesses.length) {
             remainingGuess--;
         }
+
         if (remainingGuess < 1) {
-            const point = (0 - secretWord.length);
+            const point = (0 - secretWord.length); // If remaining guess is smaller than 1, user loses
             updateGameResult(id, 0, 1, point)
-            .catch((error) => {
-                console.log('Updating user stats - FAILED');
-            });
+                .catch((error) => {
+                    console.log('Updating user stats - FAILED');
+                });
+            const newWord = await getNewWord();
+            startNewGame(id, newWord);
             socket.emit('gameOver', { userWon: false });
-        } else if (placeholder.indexOf('_') < 0) { // If placeholder does not contain any '_', user guess every letter
+
+        } else if (placeholder.indexOf('_') < 0) { // If placeholder does not contain any placeholder user guess every letter (win)
             updateGameResult(id, 1, 0, secretWord.length)
-            .catch((error) => {
-                console.log('Updating user stats - FAILED');
-            });
+                .catch((error) => {
+                    console.log('Updating user stats - FAILED');
+                });
+            const newWord = await getNewWord();
+            startNewGame(id, newWord);
             socket.emit('gameOver', { userWon: true });
-        } else {
+
+        } else {  
             socket.emit('guessResult', { 
                 placeholder: placeholder, 
                 incorrect: incorrectGuesses, 
@@ -225,10 +232,10 @@ const getNewWord = () => {
                     if (response && response[0]) {
                         resolve(response[0]);
                     } else {
-                        reject('word fetch failed - response length is 0 (invalid)');
+                        reject('Random Word fetch FAILED - response length is 0 (invalid)');
                     }
                 } catch (error) {
-                    console.log('word fetch failed');
+                    console.log('Random Word fetch FAILED');
                     reject(error);
                 }
             });
@@ -237,4 +244,3 @@ const getNewWord = () => {
         });
     });
 };
-

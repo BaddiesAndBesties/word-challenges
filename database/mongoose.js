@@ -20,7 +20,7 @@ const findUser = (email) => (
     })
 );
 
-const addUser = (givenName, lastname, email, picture, word) => {
+const addUser = (givenName, lastname, email, picture) => {
     const newUser = new User({
         given_name: givenName,
         lastname: lastname,
@@ -29,10 +29,8 @@ const addUser = (givenName, lastname, email, picture, word) => {
         point: 0,
         wins: 0,
         losses: 0,
-        isPlaying: true,
         game: {
-            word: word,
-            guess: [],
+            word: null,
         },
     });
 
@@ -44,7 +42,7 @@ const getStats = (id) => (
     User.findOne({
         _id: new ObjectId(id)
     })
-        .then(({ point, wins, losses, isPlaying }) => ({ point, wins, losses, isPlaying }))
+        .then(({ point, wins, losses }) => ({ point, wins, losses }))
 );
 
 const getCurrentGame = (id) => (
@@ -67,10 +65,8 @@ const startNewGame = (id, word) => (
         },
         {
             $set: {
-                isPlaying: true,
                 game: {
                     word: word,
-                    guess: [],
                 },
             }
         }, 
@@ -87,9 +83,6 @@ const updateGameResult = (id, win, lose, gamePoint) => (
             _id: new ObjectId(id)
         },
         {
-            $set: {
-                isPlaying: false,
-            },
             $inc: {
                 point: gamePoint,
                 wins: win,

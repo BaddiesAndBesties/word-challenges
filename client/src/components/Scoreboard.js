@@ -18,13 +18,12 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
           setPoint(point);
           setWins(wins);
           setLosses(losses);
-          setIsPlaying(isPlaying);
         })
         .catch((error) => {
           console.error(error);
         });
     }
-  }, [userDbId]);
+  }, [userDbId, isPlaying]);
 
   const startNewGame = () => {
     socketConnection.emit('newGame', {id: userDbId});

@@ -28,23 +28,26 @@ export const SocketProvider = ({ children }) => {
                 console.log('Socket disconnected');
             });
 
-            socketConnection.on('placeholder', ({ placeholder }) => {
+            socketConnection.on('newGame', ({ placeholder }) => {
                 setRemainingGuess(placeholder.length);
                 setPlaceholder(placeholder);
             });
 
-            socketConnection.on('gameOver', ({ userWon }) => {
-                setIsPlaying(false);
-                setUserWon(userWon);
-            });
-
-            socketConnection.on('guessResult', ({ placeholder, incorrect, remainingGuess, wordLength, id }) => {
+            socketConnection.on('guessResult', ({ placeholder, incorrect, remainingGuess }) => {
                 setPlaceholder(placeholder);
                 setIncorrectGuesses(incorrect.join(' ').toUpperCase());
                 setRemainingGuess(remainingGuess);
             });
+
+            socketConnection.on('gameOver', ({ userWon }) => {
+                setIsPlaying(false);
+                setPlaceholder([]);
+                setIncorrectGuesses([]);
+                setRemainingGuess(undefined);
+                setUserWon(userWon);
+            });
         }
-    }, [isPlaying]);
+    }, [userDbId]);
 
     useEffect(() => {
         if (socketConnection && userDbId && isPlaying) {

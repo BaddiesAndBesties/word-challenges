@@ -26,16 +26,10 @@ const userSchema = new Schema({
     losses: {
         type: Number,
     },
-    isPlaying: {
-        type: Boolean,
-    },
     game: {
         type: Object,
         word: {
             type: String,
-        },
-        guess: {
-            type: Array,
         },
     },
 });
