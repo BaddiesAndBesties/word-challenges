@@ -54,7 +54,7 @@ const getCurrentGame = (id) => (
 
 const getTopScores = async () => {
     const scores = await User.find();
-    scores.sort((score1, score2) => score1.point - score2.point);
+    scores.sort((userA, userB) => userB.point - userA.point);
     return scores.length <= 5 ? scores : scores.slice(5);
 };
 

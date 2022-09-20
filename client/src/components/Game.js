@@ -37,13 +37,13 @@ const Game = () => {
                         userWon ? 
                                 <div>
                                     <h1>YOU WON</h1> 
-                                    <p>Yay! The word was {placeholder.join('')}.</p>
+                                    <p>Yay! The word was "{placeholder.join('')}".</p>
                                     <p>You earned {placeholder.length} points!</p>
                                 </div>
                                 : 
                                 <div>
                                     <h1>YOU LOST</h1> 
-                                    <p>Oh no! The word was {placeholder.join('')}.</p>
+                                    <p>Oh no! The word was "{placeholder.join('')}".</p>
                                     <p>You lost {placeholder.length} points.</p>
                                 </div>
                         :
