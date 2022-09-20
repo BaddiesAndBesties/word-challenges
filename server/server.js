@@ -1,4 +1,4 @@
-require('../database/mongoose'); // mongoose.js
+require('../database/mongoose');
 require('dotenv').config();
 const express = require('express');
 const https = require('https');
@@ -126,17 +126,17 @@ app.post('/gsi', async (req, res) => {
 // SOCKET.IO
 const io = new Server(server, {
     cors: {
-        // origin: "https://word-challenges.herokuapp.com", // Use this when deploying to Heroku
-        origin: `http://localhost:3000`,
+        origin: "https://word-challenges.herokuapp.com", // Use this when deploying to Heroku
+        // origin: `http://localhost:3000`,
         methods: ["GET", "POST"],
-    },
+    }
 });
 
 io.on('connection', (socket) => {
     let secretWord, placeholder, incorrectGuesses;
 
-// Return if user data in db already has a word, return that word
-// Otherwise, return a new word
+    // Return if user data in db already has a word, return that word
+    // Otherwise, return a new word
     socket.on('newGame', async ({ id }) => { 
         if (id) {
             placeholder = [];
@@ -164,10 +164,10 @@ io.on('connection', (socket) => {
         }
     });
 
-// Examine user guess and return data to be displayed accordingly
-// (e.g., number of incorrect guesses, remaining guesses, etc.)
-// If the game is over, return the game result, get a new random word, and update DB user data
-// (e.g., new word, user's number of wins/losses, etc.)
+    // Examine user guess and return data to be displayed accordingly
+    // (e.g., number of incorrect guesses, remaining guesses, etc.)
+    // If the game is over, return the game result, get a new random word, and update DB user data
+    // (e.g., new word, user's number of wins/losses, etc.)
     socket.on('userGuess', async ({ letter, remainingGuess, id }) => {
         let prevIncorrectNum = incorrectGuesses.length;
         for (let i = 0; i < secretWord.length; i++) {
@@ -182,11 +182,12 @@ io.on('connection', (socket) => {
             remainingGuess--;
         }
 
-        if (remainingGuess < 1) {
-            const point = (0 - secretWord.length); // If remaining guess is smaller than 1, user loses
+        if (remainingGuess < 1) { // If remaining guess is smaller than 1, user loses
+            const point = (0 - secretWord.length); // Deduct word-length amount of points if your lost
             updateGameResult(id, 0, 1, point)
                 .catch((error) => {
                     console.log('Updating user stats - FAILED');
+                    console.error(error);
                 });
             const newWord = await getNewWord();
             startNewGame(id, newWord);
@@ -196,6 +197,7 @@ io.on('connection', (socket) => {
             updateGameResult(id, 1, 0, secretWord.length)
                 .catch((error) => {
                     console.log('Updating user stats - FAILED');
+                    console.error(error);
                 });
             const newWord = await getNewWord();
             startNewGame(id, newWord);
