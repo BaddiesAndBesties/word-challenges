@@ -40,9 +40,10 @@ export const SocketProvider = ({ children }) => {
                 setRemainingGuess(remainingGuess);
             });
 
-            socketConnection.on('gameOver', ({ userWon }) => {
+            socketConnection.on('gameOver', ({ userWon, secretWord }) => {
                 setIsPlaying(false);
                 setUserWon(userWon);
+                setPlaceholder(secretWord);
             });
         }
     }, [userDbId]);

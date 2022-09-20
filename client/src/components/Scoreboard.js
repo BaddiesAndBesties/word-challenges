@@ -28,13 +28,15 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
   const startNewGame = () => {
     socketConnection.emit('newGame', {id: userDbId});
     setIsPlaying(true);
+    setShowLeaderboard(false);
   };
 
   return (
     <section className='scoreboard card'>
       <div className='btnContainer'>
-        {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={startNewGame} />}
-        {(userDbId && isSignedIn) && <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} onClick={() => setShowLeaderboard(!showLeaderboard)} />}
+        {isSignedIn && !isPlaying ? <Button text='New Game' onClick={startNewGame} /> : null}
+        {isSignedIn && isPlaying ? <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} 
+                                           onClick={() => setShowLeaderboard(!showLeaderboard)} /> : null}
         <Button text='Instructions' onClick={() => setShowInstructions(true)} />
         {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
       </div>

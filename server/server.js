@@ -164,18 +164,19 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Examine user guess and return data to be displayed accordingly
-    // (e.g., number of incorrect guesses, remaining guesses, etc.)
-    // If the game is over, return the game result, get a new random word, and update DB user data
-    // (e.g., new word, user's number of wins/losses, etc.)
+    // Examine user guess and sned the data to be displayed accordingly
+    // (e.g., number of incorrect guesses, remaining guesses, etc.).
+    // If the game is over, send the game result, get a new random word, and update DB user data
+    // (e.g., new word, user's number of wins/losses, etc.).
     socket.on('userGuess', async ({ letter, remainingGuess, id }) => {
+        const guess = letter.toLowerCase();
         let prevIncorrectNum = incorrectGuesses.length;
         for (let i = 0; i < secretWord.length; i++) {
-            if (incorrectGuesses.indexOf(letter) < 0 && secretWord.indexOf(letter) < 0) {
-                incorrectGuesses.push(letter);
+            if (incorrectGuesses.indexOf(guess) < 0 && secretWord.indexOf(guess) < 0) {
+                incorrectGuesses.push(guess);
             }
-            if (secretWord[i] === letter) {
-                placeholder[i] = letter;
+            if (secretWord[i] === guess) {
+                placeholder[i] = guess;
             }
         }
         if (prevIncorrectNum < incorrectGuesses.length) {
@@ -191,7 +192,7 @@ io.on('connection', (socket) => {
                 });
             const newWord = await getNewWord();
             startNewGame(id, newWord);
-            socket.emit('gameOver', { userWon: false });
+            socket.emit('gameOver', { userWon: false, secretWord: secretWord }); // Only send the secret word once the game is over
 
         } else if (placeholder.indexOf('_') < 0) { // If placeholder does not contain any placeholder user guess every letter (win)
             updateGameResult(id, 1, 0, secretWord.length)
@@ -201,9 +202,9 @@ io.on('connection', (socket) => {
                 });
             const newWord = await getNewWord();
             startNewGame(id, newWord);
-            socket.emit('gameOver', { userWon: true });
+            socket.emit('gameOver', { userWon: true, secretWord: secretWord }); // Only send the secret word once the game is over
 
-        } else {  
+        } else { // Otherwise, the game is still not over and therefore send the data needed to display game status
             socket.emit('guessResult', { 
                 placeholder: placeholder, 
                 incorrect: incorrectGuesses, 
