@@ -9,7 +9,7 @@ const Leaderboard = () => {
             .then((users) => {
                 const userArr = [];
                 for (let i = 0; i < users.length; i++) {
-                    userArr.push(<li key={i}>{users[i].given_name}: {users[i].point} points</li>);
+                    userArr.push(<li key={i}>{i}. {users[i].given_name}: {users[i].point} points</li>);
                 }
                 SetTopPlayers(userArr);
             })
