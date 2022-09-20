@@ -1,10 +1,10 @@
-#Word Challenges 
+# Word Challenges 
 
-##Word Challenges is an interactive word-guessing game for everyone!
+## Word Challenges is an interactive word-guessing game for everyone!
 
-###To enjoy the latest hosted version, please use [this link](https://word-challenges.herokuapp.com/).
+### To enjoy the latest hosted version, please use [this link](https://word-challenges.herokuapp.com/).
 
-###For local development, Please refer to the following steps:
+### For local development, Please refer to the following steps:
 1. Clone this repo into your local machine.
 
 2. Comment out & uncomment the following:
