@@ -3,10 +3,8 @@ import Instructions from './Instructions';
 import Button from './Button';
 import { SocketContext } from '../socketProvider';
 
-
-
 const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
-  const {userDbId, setIsPlaying, isPlaying, socketConnection} = useContext(SocketContext)
+  const { socketConnection, userDbId, isPlaying, setIsPlaying } = useContext(SocketContext);
   const [showInstructions, setShowInstructions] = useState(false);
   const [point, setPoint] = useState(undefined);
   const [wins, setWins] = useState(undefined);
@@ -15,40 +13,30 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
   useEffect(() => {
     if (userDbId) {
       fetch(`/user/${userDbId}/stats`)
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then(({ point, wins, losses }) => {
           setPoint(point);
           setWins(wins);
           setLosses(losses);
-          setIsPlaying(isPlaying)
         })
         .catch((error) => {
           console.error(error);
         });
     }
-
-  }, [userDbId, point, wins, losses]);
-
+  }, [userDbId, isPlaying]);
 
   const startNewGame = () => {
-    socketConnection.emit('newGame', {id: userDbId})
-    setIsPlaying(true)
-  }
+    socketConnection.emit('newGame', {id: userDbId});
+    setIsPlaying(true);
+  };
 
   return (
     <section className='scoreboard card'>
       <div className='btnContainer'>
-        {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={ startNewGame } />}
-
-
-        { (userDbId && isSignedIn) && <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} onClick={() => setShowLeaderboard(!showLeaderboard)} />}
-
-
+        {(isSignedIn && !isPlaying) && <Button text='New Game' onClick={startNewGame} />}
+        {(userDbId && isSignedIn) && <Button text={!showLeaderboard ? 'Leaderboard' : 'Back to Game'} onClick={() => setShowLeaderboard(!showLeaderboard)} />}
         <Button text='Instructions' onClick={() => setShowInstructions(true)} />
         {showInstructions ? <Instructions setShowInstructions={setShowInstructions} /> : null}
-
       </div>
       {
         isSignedIn
@@ -68,7 +56,7 @@ const Scoreboard = ({ isSignedIn, setShowLeaderboard, showLeaderboard }) => {
           null
       }
     </section>
-  )
-}
+  );
+};
 
 export default Scoreboard;

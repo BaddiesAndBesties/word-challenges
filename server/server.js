@@ -14,10 +14,7 @@ const {
     getCurrentGame,
     getTopScores,
     startNewGame,
-    updatePlayingStatus,
-    updateUserStat } = require('../database/mongoose');
-
-
+    updateGameResult } = require('../database/mongoose');
 const port = process.env.PORT || 8080;
 const buildDir = path.join(__dirname, '..', 'client', 'build/');
 const app = express();
@@ -53,7 +50,7 @@ app.get('/user/:id/stats', (req, res) => {
 });
 
 // GET REQUEST FOR CURRENT GAME (word and current guesses)
-app.get('/user/:id/currentGame', (req, res) => {
+app.get('/user/:id/current-game', (req, res) => {
     const { id } = req.params;
     getCurrentGame(id)
         .then((game) => {
@@ -101,14 +98,11 @@ app.post('/gsi', async (req, res) => {
         });
 
     if (!userInfo) { // If the user email does NOT exist in the database, add it to the database
-        const word = await getNewWord()
-
-        addUser(given_name, family_name, email, picture, word)
+        addUser(given_name, family_name, email, picture)
             .then((mongoId) => {
                 res.status(201);
                 res.send(JSON.stringify({
                     firstname: given_name,
-                    email: email,
                     id: mongoId,
                 }));
             })
@@ -124,123 +118,58 @@ app.post('/gsi', async (req, res) => {
         res.status(200);
         res.send(JSON.stringify({
             firstname: userInfo.given_name,
-            email: userInfo.email,
             id: userInfo._id.toString(),
         }));
     }
 });
 
-// PUT REQUEST FOR UPDATING LOSS AND WIN
-app.put('/user/:id/update-stat', async (req, res) => {
-    const { id } = req.params;
-    const { result, point } = req.body;
-    let win, lose;
-    if (result) {
-        win = 1;
-        lose = 0;
-    } else {
-        win = 0;
-        lose = 1;
-    }
-    updateUserStat(id, win, lose, point)
-        // .then((data) => {
-        //     console.log(data)
-        //     res.status(201);
-        //     res.send(JSON.stringify({
-        //         mongoId: _id.toString()
-        //     }));
-        // })
-        // .catch((error) => {
-        //     console.log('Updating user stats - FAILED');
-        //     console.error(error);
-        //     res.sendStatus(400);
-        // });
-});
-
-// PUT REQUEST FOR USER PLAYING STATUS
-app.put('/user/:id/playingStatus', async (req, res) => {
-    const  id  = req.params;
-    updatePlayingStatus(id)
-        .then(() => {
-            res.sendStatus(201);
-        })
-        .catch((error) => {
-            console.log('Updating user playing status - FAILED');
-            console.error(error);
-            res.sendStatus(400);
-        });
-});
-
-app.put('/user/:id/update-stat', async (req, res) => {
-    const { id } = req.params;
-    const { result, point } = req.body;
-    let win, lose;
-    if (result) {
-        win = 1;
-        lose = 0;
-    } else {
-        win = 0;
-        lose = 1;
-    }
-    updateUserStat(id, win, lose, point)
-        .then(({ _id }) => {
-            res.status(201);
-            res.send(JSON.stringify({
-                mongoId: _id.toString()
-            }));
-        })
-        .catch((error) => {
-            console.log('Updating user stats - FAILED');
-            console.error(error);
-            res.sendStatus(400);
-        });
-});
-
 // SOCKET.IO
 const io = new Server(server, {
     cors: {
-        // origin: "https://word-challenges.herokuapp.com", // Use this when deployed to Herok
+        // origin: "https://word-challenges.herokuapp.com", // Use this when deploying to Heroku
         origin: `http://localhost:3000`,
         methods: ["GET", "POST"],
     },
 });
 
 io.on('connection', (socket) => {
-    console.log(`user connected: ${socket.id}`);
+    let secretWord, placeholder, incorrectGuesses;
 
-    let secretWord;
-    let placeholder = [];
-    let incorrectGuesses = [];
-
-
-    socket.on('placeholder', async ({ id }) => {
+// Return if user data in db already has a word, return that word
+// Otherwise, return a new word
+    socket.on('newGame', async ({ id }) => { 
         if (id) {
+            placeholder = [];
+            incorrectGuesses = [];
             secretWord = await getCurrentGame(id)
-                .then(({ game }) => {
-                    console.log(game.word); // For testing purposes
-                    return game.word.split('');
+                .then( async ({ game }) => {
+                    if (game.word) {
+                        return game.word.split('');
+                    } else {
+                        const newWord = await getNewWord();
+                        startNewGame(id, newWord);
+                        return newWord;
+                    }
                 })
                 .catch((error) => {
                     console.log('Getting user game data - FAILED');
                     console.error(error);
                 });
-            placeholder = []
-            for (let i = 0; i < secretWord.length; i++) {
-                placeholder.push('_');
-            }
-            socket.emit('placeholder', { placeholder: placeholder });
+                for (let i = 0; i < secretWord.length; i++) {
+                    placeholder.push('_');
+                }
+                socket.emit('newGame', { placeholder: placeholder });
+        } else {
+            console.log('Error - User DB ID was not provided');
         }
     });
 
-    socket.on('newGame', async ({ id }) => {
-        console.log('something went wrong', {id})
-        const newWord = await getNewWord()
-        updatePlayingStatus(id)
-        startNewGame(id, newWord)
-    })
-
-    socket.on('userGuess', ({ letter, remainingGuess, id }) => {
-        let prevIncorrectNum = incorrectGuesses.length
+// Examine user guess and return data to be displayed accordingly
+// (e.g., number of incorrect guesses, remaining guesses, etc.)
+// If the game is over, return the game result, get a new random word, and update DB user data
+// (e.g., new word, user's number of wins/losses, etc.)
+    socket.on('userGuess', async ({ letter, remainingGuess, id }) => {
+        let prevIncorrectNum = incorrectGuesses.length;
         for (let i = 0; i < secretWord.length; i++) {
             if (incorrectGuesses.indexOf(letter) < 0 && secretWord.indexOf(letter) < 0) {
                 incorrectGuesses.push(letter);
@@ -252,13 +181,35 @@ io.on('connection', (socket) => {
         if (prevIncorrectNum < incorrectGuesses.length) {
             remainingGuess--;
         }
-        socket.emit('guessResult', { 
-            placeholder: placeholder, 
-            incorrect: incorrectGuesses, 
-            remainingGuess: remainingGuess,
-            wordLength: secretWord.length,
-            id: id
-         });
+
+        if (remainingGuess < 1) {
+            const point = (0 - secretWord.length); // If remaining guess is smaller than 1, user loses
+            updateGameResult(id, 0, 1, point)
+                .catch((error) => {
+                    console.log('Updating user stats - FAILED');
+                });
+            const newWord = await getNewWord();
+            startNewGame(id, newWord);
+            socket.emit('gameOver', { userWon: false });
+
+        } else if (placeholder.indexOf('_') < 0) { // If placeholder does not contain any placeholder user guess every letter (win)
+            updateGameResult(id, 1, 0, secretWord.length)
+                .catch((error) => {
+                    console.log('Updating user stats - FAILED');
+                });
+            const newWord = await getNewWord();
+            startNewGame(id, newWord);
+            socket.emit('gameOver', { userWon: true });
+
+        } else {  
+            socket.emit('guessResult', { 
+                placeholder: placeholder, 
+                incorrect: incorrectGuesses, 
+                remainingGuess: remainingGuess,
+                wordLength: secretWord.length,
+                id: id
+            });
+        }
     });
 });
 
@@ -281,10 +232,10 @@ const getNewWord = () => {
                     if (response && response[0]) {
                         resolve(response[0]);
                     } else {
-                        reject('word fetch failed - response length is 0 (invalid)');
+                        reject('Random Word fetch FAILED - response length is 0 (invalid)');
                     }
                 } catch (error) {
-                    console.log('word fetch failed');
+                    console.log('Random Word fetch FAILED');
                     reject(error);
                 }
             });
@@ -293,4 +244,3 @@ const getNewWord = () => {
         });
     });
 };
-

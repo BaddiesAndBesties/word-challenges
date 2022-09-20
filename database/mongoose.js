@@ -20,7 +20,7 @@ const findUser = (email) => (
     })
 );
 
-const addUser = (givenName, lastname, email, picture, word) => {
+const addUser = (givenName, lastname, email, picture) => {
     const newUser = new User({
         given_name: givenName,
         lastname: lastname,
@@ -29,10 +29,8 @@ const addUser = (givenName, lastname, email, picture, word) => {
         point: 0,
         wins: 0,
         losses: 0,
-        isPlaying: true,
         game: {
-            word: word,
-            guess: [],
+            word: null,
         },
     });
 
@@ -44,7 +42,7 @@ const getStats = (id) => (
     User.findOne({
         _id: new ObjectId(id)
     })
-        .then(({ point, wins, losses, isPlaying }) => ({ point, wins, losses, isPlaying }))
+        .then(({ point, wins, losses }) => ({ point, wins, losses }))
 );
 
 const getCurrentGame = (id) => (
@@ -60,46 +58,26 @@ const getTopScores = async () => {
     return scores.length <= 5 ? scores : scores.slice(5);
 };
 
-const startNewGame = (id, word) => {
-    console.log({id, word})
-    User.findOneAndUpdate({
-        _id: new mongoose.Types.ObjectId(id)
-    },
-    {
-        $set: {
-            game: {
-                word: word,
-                guess: [],
-            },
+const startNewGame = (id, word) => (
+    User.findOneAndUpdate(
+        {
+            _id: new ObjectId(id)
+        },
+        {
+            $set: {
+                game: {
+                    word: word,
+                },
+            }
+        }, 
+        {
+            new: true
         }
-    }, 
-    {
-        sort: {}, 
-        upsert: false,
-    })
+    )
         .then((res) => res)
 );
 
-const updatePlayingStatus = (id) => { // Change isPlaying to be opposite value (true or false) 
-    User.findOneAndUpdate(
-        {
-            _id: id
-        }, 
-        [ 
-            { "$set": 
-                {
-                    "isPlaying": 
-                        {
-                            "$eq": [false, "$isPlaying"] // Returns true or false
-                        } 
-                    } 
-                } 
-            ])
-                .then((res) => res)
-        };
-
-
-const updateUserStat = (id, win, lose, gamePoint) => (
+const updateGameResult = (id, win, lose, gamePoint) => (
     User.findOneAndUpdate(
         {
             _id: new ObjectId(id)
@@ -110,9 +88,15 @@ const updateUserStat = (id, win, lose, gamePoint) => (
                 wins: win,
                 losses: lose,
             }
+        },
+        {
+            new: true
         }
     )
         .then((res) => res)
+        .catch((error) => {
+            console.log(error);
+        })
 );
 
 module.exports = { 
@@ -122,5 +106,4 @@ module.exports = {
     getCurrentGame, 
     getTopScores, 
     startNewGame, 
-    updatePlayingStatus, 
-    updateUserStat };
+    updateGameResult };
