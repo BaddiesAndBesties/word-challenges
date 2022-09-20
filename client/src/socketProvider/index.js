@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
-// const connection = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
-const connection = io.connect('http://localhost:8080');
+const connection = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
+// const connection = io.connect('http://localhost:8080');
 
 export const SocketContext = React.createContext({})
 export const SocketProvider = ({ children }) => {
