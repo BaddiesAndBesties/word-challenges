@@ -126,8 +126,8 @@ app.post('/gsi', async (req, res) => {
 // SOCKET.IO
 const io = new Server(server, {
     cors: {
-        // origin: "https://word-challenges.herokuapp.com", // Use this when deploying to Heroku
-        origin: `http://localhost:3000`,
+        origin: "https://word-challenges.herokuapp.com", // Use this when deploying to Heroku
+        // origin: `http://localhost:3000`,
         methods: ["GET", "POST"],
     },
 });
