@@ -3,12 +3,27 @@ import { useContext } from 'react';
 import { SocketContext } from '../socketProvider';
 
 const Game = () => {
-    const { socketConnection, remainingGuess, placeholder, incorrectGuesses, userWon, isPlaying, userDbId } = useContext(SocketContext);
+    const { 
+        socketConnection, 
+        remainingGuess, 
+        placeholder, 
+        incorrectGuesses, 
+        userWon, 
+        isPlaying, 
+        userDbId 
+    } = useContext(SocketContext);
+
     const makeGuess = (e) => {
         if (document.querySelector('form').checkValidity()) {
             e.preventDefault();
             const letter = document.querySelector('input');
-            socketConnection.emit('userGuess', { letter: letter.value, remainingGuess: remainingGuess, id: userDbId });
+            socketConnection.emit('userGuess', 
+                { 
+                    letter: letter.value, 
+                    remainingGuess: remainingGuess, 
+                    id: userDbId 
+                }
+            );
             letter.value = '';
         }
     };
@@ -19,7 +34,18 @@ const Game = () => {
                 {
                     !isPlaying 
                         ?  
-                        userWon ? <h1>YOU WON</h1> : <h1>YOU LOST</h1>
+                        userWon ? 
+                                <div>
+                                    <h1>YOU WON</h1> 
+                                    <p>Yay! The word was {placeholder.join('')}.</p>
+                                    <p>You earned {placeholder.length} points!</p>
+                                </div>
+                                : 
+                                <div>
+                                    <h1>YOU LOST</h1> 
+                                    <p>Oh no! The word was {placeholder.join('')}.</p>
+                                    <p>You lost {placeholder.length} points.</p>
+                                </div>
                         :
                         <div>
                             <div id='game-screen'>
