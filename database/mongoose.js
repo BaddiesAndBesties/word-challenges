@@ -106,4 +106,5 @@ module.exports = {
     getCurrentGame, 
     getTopScores, 
     startNewGame, 
-    updateGameResult };
+    updateGameResult 
+};

@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 const connection = io.connect('https://word-challenges.herokuapp.com'); // Use this for heroku deployment
 // const connection = io.connect('http://localhost:8080');
 
-export const SocketContext = React.createContext({})
+export const SocketContext = React.createContext({});
 export const SocketProvider = ({ children }) => {
     const [socketConnection, setSocketConnection] = useState(null);
     const [userDbId, setUserDbId] = useState(undefined);
@@ -31,6 +31,7 @@ export const SocketProvider = ({ children }) => {
             socketConnection.on('newGame', ({ placeholder }) => {
                 setRemainingGuess(placeholder.length);
                 setPlaceholder(placeholder);
+                setIncorrectGuesses([]);
             });
 
             socketConnection.on('guessResult', ({ placeholder, incorrect, remainingGuess }) => {
@@ -41,9 +42,6 @@ export const SocketProvider = ({ children }) => {
 
             socketConnection.on('gameOver', ({ userWon }) => {
                 setIsPlaying(false);
-                setPlaceholder([]);
-                setIncorrectGuesses([]);
-                setRemainingGuess(undefined);
                 setUserWon(userWon);
             });
         }
